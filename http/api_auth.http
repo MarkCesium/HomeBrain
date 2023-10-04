@@ -1,0 +1,7 @@
+POST http://homebrain2/api/api_authentication
+Content-Type: application/json
+
+{
+  "username": "e001",
+  "password": "1234"
+}

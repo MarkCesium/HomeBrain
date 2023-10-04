@@ -1,0 +1,73 @@
+<div class="col-sm-12">
+    {{ form_start(form) }}
+    <div class="row">
+        <div class="col-sm-8">
+            <h3>Base data</h3>
+            {{ form_row(form.name) }}
+            {{ form_row(form.active) }}
+            {{ form_row(form.orderNumber) }}
+            {{ form_row(form.description, {'attr':{'rows': 6}}) }}
+            {{ form_row(form.category, {'placeholder': 'Change category (not require)'}) }}
+
+            {% if form.vars.value.id is not null %}
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary btn-lg btn-block" data-toggle="modal"
+                            data-target="#myModal">
+                        File Manager <span class="glyphicon glyphicon-folder-open"></span>
+                    </button>
+                    <img src="" class="img-responsive" id="image" alt="">
+                </div>
+            {% endif %}
+
+            <input type="submit" class="btn btn-success ">
+            <a role="button"
+               href="{{ path(constant('AppBundle\\Controller\\Admin\\ShowpieceController::SHOWPIECE_ADMIN_ACTION'), {'category': category}) }}"
+               class="btn btn-primary">back</a>
+        </div>
+        <div class="col-sm-4">
+            <h3>Description fields</h3>
+            <div class="description-fields-container">
+                <div class="list-group"
+                     data-prototype="{{ form_widget(form.descriptionFields.vars.prototype)|e('html_attr') }}">
+                    {% for field in form.descriptionFields %}
+                        <a href="#" class="list-group-item">
+                            <h4 class="list-group-item-heading">Description field №{{ loop.index }}</h4>
+                            {{ form_row(field.name) }}
+                            {{ form_row(field.description) }}
+                            {{ form_row(field.orderNumber) }}
+                            {{ form_row(field.active) }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{ form_end(form) }}
+</div>
+<script>
+    $(document).ready(function () {
+        $collectionHolder = $('.description-fields-container .list-group');
+        $collectionHolder.append($newLinkLi);
+        $collectionHolder.data('index', $collectionHolder.find(':input').length);
+
+        $addTagLink.on('click', function (e) {
+            e.preventDefault();
+            addTagForm($collectionHolder, $newLinkLi);
+        });
+
+        $collectionHolder.find('.list-group-item').each(function () {
+            addTagFormDeleteLink($(this));
+        });
+    });
+
+    function addTagForm($collectionHolder, $newLinkLi) {
+        var prototype = $collectionHolder.data('prototype');
+        var index = $collectionHolder.data('index');
+        var newForm = prototype;
+        newForm = newForm.replace(/name/g, index);
+        $collectionHolder.data('index', index + 1);
+        var $newFormLi = $('<a href="#" class="list-group-item"><h4 class="list-group-item-heading">New</h4></a>').append(newForm);
+        $newLinkLi.before($newFormLi);
+        addTagFormDeleteLink($newFormLi);
+    }
+</script>

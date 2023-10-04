@@ -1,0 +1,194 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title fs-5" id="exampleModalLabel">Add new publisher</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(form, {'attr': {'id': 'publisher-form', 'action': path('app_add_publisher')}}) }}
+                    {{ form_errors(form) }}
+                    <div class="mb-3">
+                        <label class="form-label vasilek b1">Type</label>
+                        {{ form_widget(form.type) }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label vasilek b1">Name</label>
+                        {{ form_widget(form.name) }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label vasilek b1">Response type</label>
+                        {{ form_widget(form.responseType) }}
+                    </div>
+                    <div class="publisherDescriptions"
+                         data-index="{{ form.publisherDescriptions|length > 0 ? form.publisherDescriptions|last.vars.name + 1 : 0 }}"
+                         data-prototype="{{ form_widget(form.publisherDescriptions.vars.prototype)|e('html_attr') }}"
+                    ></div>
+
+                    <div id="descriptionForm"></div>
+                    <button type="button" class="add_item_link btn-add-room text-center b2" data-collection-holder-class="publisherDescriptions">Add
+                        a description
+                    </button>
+                    {{ form_end(form) }}
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" form="publisher-form" class="btn-add-room text-center b2">Add publisher
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid pt-1">
+        <div class="row d-flex">
+            <h1 class="vasilek text-center my-2" data-bind="text: name"></h1>
+        </div>
+        <div class="row">
+            <div class="my-2 col-12 col-sm-12 col-md-9 col-lg-9">
+                <div class="mt-0 mb-2 px-2 row">
+                    <h2 class="text-center vasilek">Devices</h2>
+                    <div class="row mx-0 my-1 px-sm-1 px-md-2 p-0">
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
+                            <div class="add-text b1 vasilek d-flex justify-content-start">
+                                <a href="#add_publisher"
+                                   class="vasilek text-decoration-none d-flex justify-content-center"
+                                   data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-title="device"
+                                   data-bs-type="1">
+                                    <img src="{{ asset('img/svg/plus.svg') }}" alt="add" class="me-1">Add device
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mx-0 my-1 px-sm-1 px-md-2 p-0" data-bind="foreach: devices">
+                        <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
+                            <div class="device-card d-flex justify-content-center">
+                                <h3 class="b2 d-flex align-items-center" data-bind="text: name"></h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="my-2 px-2 row">
+                    <h2 class="text-center vasilek">Sensors</h2>
+                    <div class="row mx-0 my-2 px-sm-1 px-md-2 p-0">
+                        <div class="m-0 p-0 col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
+                            <div class="add-text b1 vasilek d-flex justify-content-start">
+                                <a href="#add_publisher"
+                                   class="vasilek text-decoration-none d-flex justify-content-center"
+                                   data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-title="sensor"
+                                   data-bs-type="2">
+                                    <img src="{{ asset('img/svg/plus.svg') }}" alt="add" class="me-1">Add sensor
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mx-0 my-2 px-sm-1 px-md-2 p-0" data-bind="foreach: sensors">
+                        <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
+                            <div class="sensor-card d-flex justify-content-center">
+                                <h3 class="b2 d-flex align-items-center" data-bind="text: name"></h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="my-2 col-12 col-sm-12 col-md-3 col-lg-3">
+                <section class="m-0 row rooms-widget text-center d-flex justify-content-center">
+                    <h2 class="my-1 col-12 vasilek">Rooms</h2>
+                    <div class="my-1 col-12 list-group rooms-list p-0">
+                        {% for location in locations %}
+                            <a href="#{{ location.id }}"
+                               class="list-group-item list-group-item-action b2 text-color bg-vasilek-dis"
+                               data-bind="click: changeRoom"
+                               data-location="{{ location.id }}">{{ location.name }}</a>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="knockout.js"></script>
+    {{ parent() }}
+    <script>
+        // TODO: учесть несуществующие комнаты!
+        window.addEventListener("DOMContentLoaded", function () {
+            let location = window.location.hash.slice(1);
+            $(`[data-location='${location}']`).addClass('active');
+            $.get(`/location/${location}/get/publisher`, function (data) {
+                console.log(data);
+                ko.applyBindings({
+                    name: ko.observable(data.data.name),
+                    sensors: ko.observableArray(data.data.sensors),
+                    devices: ko.observableArray(data.data.devices),
+                    changeRoom: viewFunctions.changeRoom
+                })
+            });
+            const exampleModal = document.getElementById('exampleModal')
+            exampleModal.addEventListener('show.bs.modal', event => {
+                // Button that triggered the modal
+                const button = event.relatedTarget;
+                const locationId = window.location.hash.slice(1);
+                // Extract info from data-bs-* attributes
+                const recipient = button.getAttribute('data-bs-title');
+                const typeSelect = button.getAttribute('data-bs-type');
+                // If necessary, you could initiate an AJAX request here
+                // and then do the updating in a callback.
+                //
+                // Update the modal's content.
+                const modalTitle = exampleModal.querySelector('.modal-title');
+                const modalTypeInput = exampleModal.querySelector('.modal-body #publisher_type');
+                const modalLocationInput = exampleModal.querySelector('.modal-body #publisher_location');
+
+                modalTitle.textContent = `Add new ${recipient}`;
+                modalTypeInput.value = typeSelect;
+                modalLocationInput.value = locationId;
+            })
+            // let options = $('#publisher_type option');
+            //
+            // options.map(function () {
+            //     console.log(this.value)
+            // })
+            document.querySelector('.add_item_link').addEventListener("click", addFormToCollection);
+            function addFormToCollection(e) {
+                const collectionHolder = document.querySelector('.publisherDescriptions');
+
+                const item = document.createElement('div');
+                console.log(collectionHolder)
+                item.innerHTML = collectionHolder
+                    .dataset
+                    .prototype
+                    .replace(
+                        /__name__/g,
+                        collectionHolder.dataset.index
+                    );
+
+                collectionHolder.appendChild(item);
+
+                collectionHolder.dataset.index++;
+            }
+        });
+        let viewFunctions = {
+            changeRoom: function (data, event) {
+                const _self = this;
+                const locationId = $(event.currentTarget).attr('data-location');
+                $('.list-group a.active').removeClass('active');
+                $(event.currentTarget).addClass('active')
+                // window.document.querySelectorAll('.list-group-item');
+                // $(this).addClass('active');
+                window.location.hash = `#${locationId}`;
+                // update bind homework
+                console.log(_self)
+                $.get(`/location/${locationId}/get/publisher`, function (data) {
+                    console.log(data);
+                    _self.sensors(data.data.sensors);
+                    _self.devices(data.data.devices);
+                    _self.name(data.data.name);
+                });
+            }
+        }
+
+    </script>
+{% endblock %}

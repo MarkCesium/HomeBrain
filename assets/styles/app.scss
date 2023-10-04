@@ -1,0 +1,208 @@
+@import "~bootstrap/scss/bootstrap";
+
+@font-face {
+  // название шрифта(чтобы не запутаться лучше указать название папки со шрифтом)
+  font-family: "Roboto";
+  // адрес шрифта и тип
+  src: url("../fonts/Roboto-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: normal;
+}
+
+@font-face {
+  // название шрифта(чтобы не запутаться лучше указать название папки со шрифтом)
+  font-family: "Nunito";
+  // адрес шрифта и тип
+  src: url("../fonts/Nunito-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: normal;
+}
+
+.bg-vasilek {
+  background-color: #6E9EF9;
+}
+
+.bg-vasilek-dis {
+  background-color: rgba(110, 158, 249, 0.25);
+}
+
+.vasilek {
+  color: #6E9EF9;
+}
+
+h1 {
+  font-size: 60px;
+  line-height: 130%;
+  font-family: 'Roboto';
+  margin: 0;
+}
+
+h2 {
+  font-size: 48px;
+  line-height: 130%;
+  font-family: 'Roboto';
+  margin: 0;
+}
+
+h3 {
+  font-size: 32px;
+  line-height: 130%;
+  font-family: 'Roboto';
+  margin: 0;
+}
+
+.b1 {
+  font-size: 24px;
+  line-height: 130%;
+  font-family: 'Nunito';
+}
+
+.b2 {
+  font-size: 20px;
+  line-height: 130%;
+  font-family: 'Nunito';
+}
+
+.b3 {
+  font-size: 16px;
+  line-height: 130%;
+  font-family: 'Nunito';
+}
+
+.text-color {
+  color: #232323;
+}
+
+.my-white {
+  color: #EBEBEB;
+}
+
+.nav-link.active {
+  color: #EBEBEB;
+}
+
+.active {
+  color: #EBEBEB;
+}
+
+.user-avatar {
+  height: 64px;
+  border-radius: 32px;
+}
+
+.brand-logo {
+  height: 100px;
+  fill: #EBEBEB;
+}
+
+.form-control {
+  border-radius: 10px;
+  background: #6E9EF9;
+  border: 2px solid #EBEBEB;
+  color: #EBEBEB;
+  font-family: 'Nunito';
+  height: 40px;
+}
+
+.form-label {
+  color: #6E9EF9;
+  font-family: 'Nunito';
+  font-size: 24px;
+}
+
+.form-modal-input {
+  border-radius: 10px;
+  background: transparent;
+  border: 2px solid #6E9EF9;
+  font-family: 'Nunito';
+  color: #232323;
+  height: 40px;
+}
+
+.plus-svg {
+  height: 32px;
+  stroke: #6E9EF9;
+}
+
+.device-card {
+  min-height: 200px;
+  min-width: 200px;
+  border-radius: 10px;
+  background-color: rgba(110, 158, 249, 0.25);
+}
+
+.sensor-card {
+  min-height: 200px;
+  min-width: 200px;
+  border-radius: 10px;
+  background-color: rgba(110, 158, 249, 0.25);
+}
+
+.room-card {
+  display: flex;
+  align-self: flex-end;
+}
+
+.room-icon {
+  width: 200px;
+  max-height: 200px;
+}
+
+.room-name {
+  max-width: 180px;
+  height: fit-content;
+  text-align: center;
+}
+
+button {
+  border: 2px solid #EBEBEB;
+  border-radius: 10px;
+  background: #6E9EF9;
+  color: #EBEBEB;
+  height: 40px;
+  width: 100px;
+}
+
+.rooms-list {
+  max-width: 210px;
+  border-radius: 10px;
+  background-color: rgba(110, 158, 249, 0.25);
+}
+
+.room-active {
+  color: #6E9EF9;
+}
+
+button:active,
+button:focus,
+button:hover {
+  background-color: #EBEBEB;
+  color: #232323;
+}
+
+.btn-add-room {
+  font-family: 'Nunito';
+  border: 2px solid #6E9EF9;
+  border-radius: 10px;
+  background: #6E9EF9;
+  color: #EBEBEB;
+  width: fit-content;
+}
+
+.btn-add-room:active,
+.btn-add-room:focus,
+.btn-add-room:hover {
+  background-color: #FFFFFF;
+  color: #6E9EF9;
+}
+
+#user-link:focus,
+#user-link:hover {
+  color: #EBEBEB;
+}
+
+li.nav-item a.nav-link:focus,
+li.nav-item a.nav-link:hover,
+li.nav-item a.nav-link:active {
+  color: #EBEBEB;
+}

@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container pt-1">
+        <div class="row">
+            <h1 class="vasilek text-center my-2">Profile</h1>
+        </div>
+        {{ form_start(form, {'attr': {'class': 'row', 'action': path('user_change_data'), 'method': 'post'}}) }}
+        <div class="col-sm-12 col-md-6 text-center my-2">
+            {% if not app.user.avatar %}
+                <img class="w-50 my-2" src="{{ asset('img/avatars/default_avatar.png') }}" alt="user_avatar">
+            {% else %}
+                <img class="w-50 my-2" src="{{ asset(app.user.avatar) }}" alt="user_avatar">
+            {% endif %}
+            <div class="choose-avatar">
+                <div class="w-100 d-flex justify-content-center my-1">
+                    <img src="{{ asset('img/svg/search.svg') }}" alt="search" class="mx-1">
+                    <h3 class="text-color b1 mx-1">Choose avatar</h3>
+                </div>
+                <div class="d-flex justify-content-center my-1">{{ form_widget(form.avatar) }}</div>
+
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-6 my-2">
+            <div class="row my-3">
+                <div class="col-12 col-lg-6 d-flex justify-content-lg-start justify-content-center my-1">
+                    <h3 class="vasilek">User name</h3>
+                </div>
+                <div class="col-12 col-lg-6 d-flex justify-content-lg-end justify-content-center my-1"><h3>{{ form_widget(form.username) }}</h3></div>
+            </div>
+            <div class="row my-3">
+                <div class="col-12 col-lg-6 d-flex justify-content-lg-start justify-content-center my-1">
+                    <h3 class="vasilek">Email</h3>
+                </div>
+                <div class="col-12 col-lg-6 d-flex justify-content-lg-end justify-content-center my-1"><h3>{{ form_widget(form.email) }}</h3></div>
+            </div>
+        </div>
+        <div class="col-12 d-flex justify-content-center my-2">
+            <button class="btn-add-room text-center b2" type="submit">Save changes</button>
+        </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

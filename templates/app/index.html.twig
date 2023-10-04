@@ -1,0 +1,126 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello AppController!{% endblock %}
+
+{% block activeHome %}my-white{% endblock %}
+
+{% block body %}
+    <!-- Modals -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title fs-5" id="exampleModalLabel">Add new room</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(form, {'attr': {'id': 'location-form', 'action': path('app_add_location'), 'method': 'post'}}) }}
+                    {{ form_errors(form) }}
+                    <div class="mb-3">
+                        <label class="form-label vasilek b1">Name</label>
+                        {{ form_widget(form.name) }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label vasilek b1">Icon file</label>
+                        {{ form_widget(form.icon) }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label vasilek b1">Or choose our icon</label>
+                        {{ form_widget(form.icon_image) }}
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-add-room text-center b2" type="submit" form="location-form">Add room</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{#    <!--#}
+{#    <div class="modal fade" id="locationChangeData" tabindex="-1" aria-labelledby="locationChangeDataLabel" aria-hidden="true">#}
+{#        <div class="modal-dialog">#}
+{#            <div class="modal-content">#}
+{#                <div class="modal-header">#}
+{#                    <h3 class="modal-title fs-5" id="locationChangeDataLabel">Add new room</h3>#}
+{#                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>#}
+{#                </div>#}
+{#                <div class="modal-body">#}
+{#                    {{ form_start(form, {'attr': {'id': 'location-form', 'action': path('app_add_location'), 'method': 'post'}}) }}#}
+{#                    {{ form_errors(form) }}#}
+{#                    <div class="mb-3">#}
+{#                        <label class="form-label vasilek b1">Name</label>#}
+{#                        {{ form_widget(form.name) }}#}
+{#                    </div>#}
+{#                    <div class="mb-3">#}
+{#                        <label class="form-label vasilek b1">Icon file</label>#}
+{#                        {{ form_widget(form.icon) }}#}
+{#                    </div>#}
+{#                    <div class="mb-3">#}
+{#                        <label class="form-label vasilek b1">Or choose our icon</label>#}
+{#                        {{ form_widget(form.icon_image) }}#}
+{#                    </div>#}
+{#                    {{ form_end(form) }}#}
+{#                </div>#}
+{#                <div class="modal-footer">#}
+{#                    <button class="btn-add-room text-center b2" type="submit" form="location-form">Add room</button>#}
+{#                </div>#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{#    -->#}
+    <!-- Modals End -->
+    <div class="container-fluid px-2 px-sm-3 px-md-3 px-lg-4 px-xl-5">
+        <h1 class="text-center my-2 vasilek">Main info</h1>
+        <div class="row my-2">
+            <div class="col-12">
+                <div class="info">
+                    <h3 class="text-center vasilek mb-1">How to use it?</h3>
+                    <div class="b1 text-color text-center">See <a href="#" class="vasilek">user help</a> guide, to use it good</div>
+                </div>
+            </div>
+{#            <div class="m-3 col-12 col-sm-12 col-md-8">#}
+{#                <div class="chart"></div>#}
+{#            </div>#}
+        </div>
+        <div class="row mt-2">
+            <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
+                <div class="add-text b1 vasilek d-flex justify-content-start">
+                    <a href="#add_room" class="vasilek text-decoration-none d-flex justify-content-center" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        <img src="{{ asset('img/svg/plus.svg') }}" alt="add" class="me-1">Add room
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="row my-2">
+            {% if locations is not empty %}
+                {% for location in locations %}
+                    <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center my-3">
+                        <div class="room-card p-2 d-inline text-center">
+                            <img class="room-icon"
+                                 src="{{ location.icon is not empty ? location.icon : location.iconImage.img }}"
+                                 alt="nothing">
+                            <h3 class="room-name mx-auto d-flex justify-content-center">
+                                <a class="vasilek text-decoration-none me-1"
+                                        href="{{ path('app_location') }}#{{ location.id }}">{{ location.name }}
+                                </a>
+                                <a href=""><img class="ms-1" src="{{ asset('img/svg/edit.svg') }}" alt="edit"></a>
+                            </h3>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center my-3">
+                    <div class="room-card p-2 d-inline text-center">
+                        <img class="room-icon" src="{{ asset('img/svg/help-circle.svg') }}"
+                             alt="nothing">
+                        <h3 class="room-name vasilek">You doesn't have a room</h3>
+                    </div>
+                </div>
+            {% endif %}
+
+
+        </div>
+    </div>
+
+
+{% endblock %}

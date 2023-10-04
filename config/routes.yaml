@@ -1,0 +1,59 @@
+#App
+index:
+  path: /
+  controller: App\Controller\AppController::index
+
+app_login:
+  path: /login
+  controller: App\Controller\UserController::login
+
+app_registration:
+  path: /registration
+  controller: App\Controller\UserController::registration
+
+user_change_data:
+  path: /user/data/change
+  controller: App\Controller\UserController::change
+
+app_logout:
+  path: /logout
+
+app_login_check:
+  path: /login/check
+  controller: App\Controller\UserController::login_check
+
+app_add_location:
+  path: /location/add
+  controller: App\Controller\AppController::addLocation
+
+app_dashboard:
+  path: /dashboard
+  controller: App\Controller\AppController::dashboard
+
+app_location_change_data:
+  path: /location/data/change
+
+app_location:
+  path: /location
+  controller: App\Controller\AppController::location
+
+app_get_publisher:
+  path: /location/{location}/get/publisher
+  controller: App\Controller\AppController::getPublishers
+  requirements:
+    location: '\d+'
+
+app_add_publisher:
+  path: /publisher/add
+  controller: App\Controller\AppController::addPublisher
+
+user_account:
+  path: /user/account
+  controller: App\Controller\UserController::account
+
+api_login_check:
+  path: /api/api_authentication
+
+api_hello:
+  path: /api/api_hello
+  controller: App\Controller\IntegratedSystemController::helloWorld
