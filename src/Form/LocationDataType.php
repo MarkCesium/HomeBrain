@@ -43,7 +43,7 @@ class LocationDataType extends AbstractType
                     ])
                 ],
             ])
-            ->add('iconImage', EntityType::class, [
+            ->add('icon_image', EntityType::class, [
                 'class' => IconImage::class,
                 'required' => false,
                 'attr' => ['class' => 'form-modal-input'],

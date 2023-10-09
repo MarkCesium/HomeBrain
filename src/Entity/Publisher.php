@@ -7,7 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\VarDumper\VarDumper;
 
+/**
+ * Class Publisher
+ * @package App\Entity
+ */
 #[ORM\Entity(repositoryClass: PublisherRepository::class)]
 class Publisher
 {
@@ -42,11 +47,17 @@ class Publisher
         return $this->name;
     }
 
+    /**
+     * @return int|null
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * @return int|null
+     */
     public function getType(): ?int
     {
         return $this->type;
@@ -59,6 +70,9 @@ class Publisher
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getName(): ?string
     {
         return $this->name;
@@ -71,11 +85,18 @@ class Publisher
         return $this;
     }
 
+    /**
+     * @return Location|null
+     */
     public function getLocation(): ?Location
     {
         return $this->location;
     }
 
+    /**
+     * @param Location|null $location
+     * @return $this
+     */
     public function setLocation(?Location $location): static
     {
         $this->location = $location;
@@ -91,6 +112,10 @@ class Publisher
         return $this->publisherDescriptions;
     }
 
+    /**
+     * @param PublisherDescription $publisherDescription
+     * @return $this
+     */
     public function addPublisherDescription(PublisherDescription $publisherDescription): static
     {
         if (!$this->publisherDescriptions->contains($publisherDescription)) {
@@ -101,6 +126,10 @@ class Publisher
         return $this;
     }
 
+    /**
+     * @param PublisherDescription $publisherDescription
+     * @return $this
+     */
     public function removePublisherDescription(PublisherDescription $publisherDescription): static
     {
         if ($this->publisherDescriptions->removeElement($publisherDescription)) {
@@ -118,11 +147,36 @@ class Publisher
         return $this->responseType;
     }
 
+    /**
+     * @param string $responseType
+     * @return $this
+     */
     public function setResponseType(string $responseType): static
     {
         $this->responseType = $responseType;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAsArrayAPI(): array
+    {
+        $publisherDescriptions = [];
+        $descriptions = $this->getPublisherDescriptions();
+        foreach ($descriptions as $pd) {
+//            $publisherDescription = [];
+            $setting = $pd->getPublisherSetting();
+            $publisherDescriptions[$setting->getAlias()] = $pd->getValue();
+//            $publisherDescriptions[] = $publisherDescription;
+        }
+
+        return [
+            'id' => $this->getId(),
+            'responseType' => $this->getResponseType(),
+            'publisherDescriptions' => $publisherDescriptions
+        ];
     }
 
     public function getAsArray(): array
@@ -133,7 +187,13 @@ class Publisher
             'name' => $this->getName(),
             'type' => $this->getType(),
             'location' => $this->location->getId(),
-            'responseType' => $this->getResponseType()
+            'responseType' => $this->getResponseType(),
+            'value' => null
         ];
     }
+    // /**+enter=phpDoc,
+    // ctrl+alt+shift+T=refactor,
+    // alt+click=cursor,
+    // ctrl+shift+alt+J=equals words,
+    // ctrl+alt+M=extract into new function
 }

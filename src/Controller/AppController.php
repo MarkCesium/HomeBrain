@@ -44,24 +44,14 @@ class AppController extends AbstractController
         $location = new Location();
 
         $form = $this->createForm(LocationType::class, $location);
+        $formLocationData = $this->createForm(LocationDataType::class);
 
         return $this->render('app/index.html.twig', [
             'locations' => array_reverse($locations),
-            'form' => $form
+            'form' => $form,
+            'formLocationData' => $formLocationData
         ]);
     }
-
-//    public function changeLocation(
-//        Request $request,
-//        EntityManagerInterface $em,
-//        SluggerInterface $slugger,
-//        UserInterface $user
-//    ): Response
-//    {
-//
-//
-//        return $this->redirectToRoute('index');
-//    }
 
     public function addLocation(
         Request $request,
@@ -71,6 +61,56 @@ class AppController extends AbstractController
     ): Response
     {
         $location = new Location();
+        $form = $this->createForm(LocationType::class, $location);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $icon = $form->get('icon')->getData();
+            VarDumper::dump($form);
+            if ((!$icon && !$location->getIconImage()) || ($location->getIconImage() && $icon)) {
+                $this->addFlash('danger', 'Something went wrong!');
+                $this->redirectToRoute('index');
+            }
+            if ($icon) {
+                $originalFilename = pathinfo($icon->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $path = sprintf('/img/locations/%s/', $user->getId());
+                $newFilename = sprintf('%s-%s.%s', substr($safeFilename, 0, 150), uniqid(), $icon->guessExtension());
+                $filePath = sprintf('%s/public%s', $this->getParameter('kernel.project_dir'), $path);
+
+                $icon->move(
+                    $filePath,
+                    $newFilename
+                );
+//                $this->addFlash('danger', 'Image not upload');
+
+                $location->setIcon(sprintf('%s%s', $path, $newFilename));
+            }
+            try {
+                $em->persist($location);
+                $em->flush();
+                $userLocation = new UserLocation();
+                $userLocation->setUser($user);
+                $userLocation->setLocation($location);
+                $em->persist($userLocation);
+                $em->flush();
+                $this->addFlash('success', 'Room was successful added!');
+            } catch (ErrorException) {
+                $this->addFlash('danger', 'Something went wrong!');
+            }
+
+        }
+
+        return $this->redirectToRoute('index');
+    }
+
+    public function changeLocation(
+        Request $request,
+        EntityManagerInterface $em,
+        SluggerInterface $slugger,
+        UserInterface $user
+    ): Response
+    {
+        $location = $em->getRepository(Location::class)->findUserLocation($locationId, $user->getId());
         $form = $this->createForm(LocationType::class, $location);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

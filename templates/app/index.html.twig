@@ -36,38 +36,37 @@
             </div>
         </div>
     </div>
-{#    <!--#}
-{#    <div class="modal fade" id="locationChangeData" tabindex="-1" aria-labelledby="locationChangeDataLabel" aria-hidden="true">#}
-{#        <div class="modal-dialog">#}
-{#            <div class="modal-content">#}
-{#                <div class="modal-header">#}
-{#                    <h3 class="modal-title fs-5" id="locationChangeDataLabel">Add new room</h3>#}
-{#                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>#}
-{#                </div>#}
-{#                <div class="modal-body">#}
-{#                    {{ form_start(form, {'attr': {'id': 'location-form', 'action': path('app_add_location'), 'method': 'post'}}) }}#}
-{#                    {{ form_errors(form) }}#}
-{#                    <div class="mb-3">#}
-{#                        <label class="form-label vasilek b1">Name</label>#}
-{#                        {{ form_widget(form.name) }}#}
-{#                    </div>#}
-{#                    <div class="mb-3">#}
-{#                        <label class="form-label vasilek b1">Icon file</label>#}
-{#                        {{ form_widget(form.icon) }}#}
-{#                    </div>#}
-{#                    <div class="mb-3">#}
-{#                        <label class="form-label vasilek b1">Or choose our icon</label>#}
-{#                        {{ form_widget(form.icon_image) }}#}
-{#                    </div>#}
-{#                    {{ form_end(form) }}#}
-{#                </div>#}
-{#                <div class="modal-footer">#}
-{#                    <button class="btn-add-room text-center b2" type="submit" form="location-form">Add room</button>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    </div>#}
-{#    -->#}
+    <div class="modal fade" id="locationChangeData" tabindex="-1" aria-labelledby="locationChangeDataLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title fs-5" id="locationChangeDataLabel">Edit room</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{ form_start(formLocationData, {'attr': {'id': 'location-form', 'action': path('app_add_location'), 'method': 'post'}}) }}
+                    {{ form_errors(formLocationData) }}
+                    <div class="mb-3">
+                        <label class="form-label vasilek b1">Name</label>
+                        {{ form_widget(formLocationData.name) }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label vasilek b1">Icon file</label>
+                        {{ form_widget(formLocationData.icon) }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label vasilek b1">Or choose our icon</label>
+                        {{ form_widget(formLocationData.icon_image) }}
+                    </div>
+                    {{ form_widget(formLocationData.id) }}
+                    {{ form_end(formLocationData) }}
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-add-room text-center b2" type="submit" form="location-form">Add room</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Modals End -->
     <div class="container-fluid px-2 px-sm-3 px-md-3 px-lg-4 px-xl-5">
         <h1 class="text-center my-2 vasilek">Main info</h1>
@@ -103,7 +102,7 @@
                                 <a class="vasilek text-decoration-none me-1"
                                         href="{{ path('app_location') }}#{{ location.id }}">{{ location.name }}
                                 </a>
-                                <a href=""><img class="ms-1" src="{{ asset('img/svg/edit.svg') }}" alt="edit"></a>
+                                <a href="#change-location" data-bs-toggle="modal" data-bs-target="#locationChangeData" onclick="selectLocation({{location.id}})"><img class="ms-1" src="{{ asset('img/svg/edit.svg') }}" alt="edit"></a>
                             </h3>
                         </div>
                     </div>
@@ -123,4 +122,13 @@
     </div>
 
 
+{% endblock %}
+{% block javascripts %}
+
+{{ parent() }}
+    <script>
+        function selectLocation(locationId) {
+            $('#location_data_id').value = locationId;
+        }
+    </script>
 {% endblock %}

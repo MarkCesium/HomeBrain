@@ -52,8 +52,16 @@ user_account:
   controller: App\Controller\UserController::account
 
 api_login_check:
-  path: /api/api_authentication
+  path: /api/api-authentication
 
 api_hello:
-  path: /api/api_hello
+  path: /api/api-hello
   controller: App\Controller\IntegratedSystemController::helloWorld
+
+api_get_sensors:
+  path: /api/sensors/get
+  controller: App\Controller\IntegratedSystemController::getSensors
+
+api_get_devices:
+  path: /api/devices/get
+  controller: App\Controller\IntegratedSystemController::getDevices

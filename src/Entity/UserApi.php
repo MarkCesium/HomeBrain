@@ -26,6 +26,9 @@ class UserApi implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::JSON)]
     private array $roles = [];
 
+    #[ORM\ManyToOne(inversedBy: 'userApis')]
+    private ?User $user = null;
+
     public function __construct()
     {
         $this->roles = [];
@@ -121,6 +124,18 @@ class UserApi implements UserInterface, PasswordAuthenticatedUserInterface
             unset($this->roles[$key]);
             $this->roles = array_values($this->roles);
         }
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

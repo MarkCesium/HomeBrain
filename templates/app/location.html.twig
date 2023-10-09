@@ -29,7 +29,8 @@
                     ></div>
 
                     <div id="descriptionForm"></div>
-                    <button type="button" class="add_item_link btn-add-room text-center b2" data-collection-holder-class="publisherDescriptions">Add
+                    <button type="button" class="add_item_link btn-add-room text-center b2"
+                            data-collection-holder-class="publisherDescriptions">Add
                         a description
                     </button>
                     {{ form_end(form) }}
@@ -68,6 +69,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
                 <div class="my-2 px-2 row">
                     <h2 class="text-center vasilek">Sensors</h2>
@@ -86,10 +88,17 @@
                     <div class="row mx-0 my-2 px-sm-1 px-md-2 p-0" data-bind="foreach: sensors">
                         <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
                             <div class="sensor-card d-flex justify-content-center">
-                                <h3 class="b2 d-flex align-items-center" data-bind="text: name"></h3>
+                                <div class="row">
+                                    <h3 class="b2 d-flex align-items-center" data-bind="text: name"></h3>
+                                    <div class="b2 d-flex align-items-center ms-2" data-bind="text: value"></div>
+                                </div>
+                                <div class="row">
+                                    <div class="b3 d-flex align-items-center" data-bind="text: updated"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
             <div class="my-2 col-12 col-sm-12 col-md-3 col-lg-3">
@@ -107,24 +116,56 @@
             </div>
         </div>
     </div>
+    <script src="knockout.js"></script>
 {% endblock %}
 
 {% block javascripts %}
-    <script src="knockout.js"></script>
     {{ parent() }}
     <script>
+        const socket = new WebSocket("ws://homebrain2:3001");
+        let interval;
+        let viewFunctions = {
+            changeRoom: function (data, event) {
+                const _self = this;
+                const locationId = $(event.currentTarget).attr('data-location');
+                $('.list-group a.active').removeClass('active');
+                $(event.currentTarget).addClass('active')
+                // window.document.querySelectorAll('.list-group-item');
+                // $(this).addClass('active');
+                window.location.hash = `#${locationId}`;
+                // update bind homework
+                console.log(_self)
+                clearInterval(interval);
+                $.get(`/location/${locationId}/get/publisher`, function (data) {
+                    console.log(data);
+                    _self.sensors(data.data.sensors);
+                    _self.devices(data.data.devices);
+                    _self.name(data.data.name);
+                    interval = setInterval(() => sendData(socket, locationId), 1000);
+                });
+            }
+        }
+        let viewModel = {
+            name: ko.observable(''),
+            sensors: ko.observableArray([]),
+            devices: ko.observableArray([]),
+            changeRoom: viewFunctions.changeRoom
+        }
+        ko.applyBindings(viewModel);
+
         // TODO: учесть несуществующие комнаты!
         window.addEventListener("DOMContentLoaded", function () {
             let location = window.location.hash.slice(1);
             $(`[data-location='${location}']`).addClass('active');
             $.get(`/location/${location}/get/publisher`, function (data) {
                 console.log(data);
-                ko.applyBindings({
-                    name: ko.observable(data.data.name),
-                    sensors: ko.observableArray(data.data.sensors),
-                    devices: ko.observableArray(data.data.devices),
-                    changeRoom: viewFunctions.changeRoom
-                })
+                viewModel.name(data.data.name);
+                for (let sensor of data.data.sensors) {
+                    sensor.value = ko.observable(sensor.value);
+                    sensor.updated = ko.observable(sensor.updated);
+                }
+                viewModel.sensors(data.data.sensors);
+                viewModel.devices(data.data.devices);
             });
             const exampleModal = document.getElementById('exampleModal')
             exampleModal.addEventListener('show.bs.modal', event => {
@@ -146,12 +187,9 @@
                 modalTypeInput.value = typeSelect;
                 modalLocationInput.value = locationId;
             })
-            // let options = $('#publisher_type option');
-            //
-            // options.map(function () {
-            //     console.log(this.value)
-            // })
+
             document.querySelector('.add_item_link').addEventListener("click", addFormToCollection);
+
             function addFormToCollection(e) {
                 const collectionHolder = document.querySelector('.publisherDescriptions');
 
@@ -169,26 +207,36 @@
 
                 collectionHolder.dataset.index++;
             }
-        });
-        let viewFunctions = {
-            changeRoom: function (data, event) {
-                const _self = this;
-                const locationId = $(event.currentTarget).attr('data-location');
-                $('.list-group a.active').removeClass('active');
-                $(event.currentTarget).addClass('active')
-                // window.document.querySelectorAll('.list-group-item');
-                // $(this).addClass('active');
-                window.location.hash = `#${locationId}`;
-                // update bind homework
-                console.log(_self)
-                $.get(`/location/${locationId}/get/publisher`, function (data) {
-                    console.log(data);
-                    _self.sensors(data.data.sensors);
-                    _self.devices(data.data.devices);
-                    _self.name(data.data.name);
-                });
-            }
-        }
 
+            socket.addEventListener("open", function () {
+                console.log("CONNECTED");
+                interval = setInterval(() => sendData(socket, location), 1000);
+                console.log('lalal')
+            });
+            socket.addEventListener('message', function (msg) {
+                const sensorsData = JSON.parse(msg.data);
+                console.log(sensorsData);
+                let sensors = viewModel.sensors();
+                for (let sensor of sensors) {
+                    for (const sensorData of sensorsData) {
+                        if (sensorData.id === sensor.id) {
+                            sensor.value(sensorData.value);
+                            sensor.updated(sensorData.updated);
+
+                            // console.log(sensorData.value);
+                            break;
+                        }
+                    }
+                }
+                // viewModel.sensors(sensors);
+                // console.log(viewModel.sensors());
+            })
+        });
+
+        function sendData(socket, location) {
+
+            socket.send(JSON.stringify({'location': location}));
+
+        }
     </script>
 {% endblock %}

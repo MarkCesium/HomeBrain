@@ -40,10 +40,14 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $avatar = null;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: UserApi::class)]
+    private Collection $userApis;
+
     public function __construct()
     {
         $this->roles = [];
         $this->userLocations = new ArrayCollection();
+        $this->userApis = new ArrayCollection();
     }
 
     public function __toString()
@@ -221,6 +225,36 @@ class User implements PasswordAuthenticatedUserInterface, UserInterface
     public function setAvatar(?string $avatar): static
     {
         $this->avatar = $avatar;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, UserApi>
+     */
+    public function getUserApis(): Collection
+    {
+        return $this->userApis;
+    }
+
+    public function addUserApi(UserApi $userApi): static
+    {
+        if (!$this->userApis->contains($userApi)) {
+            $this->userApis->add($userApi);
+            $userApi->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserApi(UserApi $userApi): static
+    {
+        if ($this->userApis->removeElement($userApi)) {
+            // set the owning side to null (unless already changed)
+            if ($userApi->getUser() === $this) {
+                $userApi->setUser(null);
+            }
+        }
 
         return $this;
     }
