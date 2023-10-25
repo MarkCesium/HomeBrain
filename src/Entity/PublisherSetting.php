@@ -27,6 +27,9 @@ class PublisherSetting
     #[ORM\OneToMany(mappedBy: 'publisherSetting', targetEntity: PublisherDescription::class)]
     private Collection $publisherDescription;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $fieldsGroup = null;
+
     public function __construct()
     {
         $this->publisherDescription = new ArrayCollection();
@@ -99,6 +102,18 @@ class PublisherSetting
                 $publisherDescription->setPublisherSetting(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFieldsGroup(): ?string
+    {
+        return $this->fieldsGroup;
+    }
+
+    public function setFieldsGroup(?string $fieldsGroup): static
+    {
+        $this->fieldsGroup = $fieldsGroup;
 
         return $this;
     }

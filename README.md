@@ -1,4 +1,4 @@
-"# HomeBrain" 
+"# HomeBrain"
 
 ```
 request:
@@ -10,61 +10,61 @@ response:
 GET http://homebrain2/api/sensors/get
 
 {
-"data": [
-{
-"id": 1,
-"responseType": "int",
-"publisherDescriptions": {
-"pin_input": "3",
-"handler": "getDataBool",
-"srd": "500",
-"reaction": "digitalSignal",
-"device_pin_out": "4"
-}
-},
-{
-"id": 2,
-"responseType": "int",
-"publisherDescriptions": []
-},
-{
-"id": 3,
-"responseType": "int",
-"publisherDescriptions": []
-},
-{
-"id": 4,
-"responseType": "int",
-"publisherDescriptions": []
-},
-{
-"id": 10,
-"responseType": "bool",
-"publisherDescriptions": []
-},
-{
-"id": 14,
-"responseType": "int",
-"publisherDescriptions": {
-"pin_input": "2"
-}
-},
-{
-"id": 16,
-"responseType": "float",
-"publisherDescriptions": {
-"pin_out": "6"
-}
-},
-{
-"id": 17,
-"responseType": "int",
-"publisherDescriptions": {
-"pin_out": "8"
-}
-}
-],
-"status": 1
+    "data": [
+        {
+            "id": 1,
+            "responseType": "int",
+            "publisherDescriptions": {
+            "pin_input": "3",
+            "handler": "getDataBool",
+            "srd": "500",
+            "reaction": "digitalSignal",
+            "device_pin_out": "4"
+        }
+        },
+        {
+            "id": 2,
+            "responseType": "int",
+            "publisherDescriptions": []
+        },
+        {
+            "id": 3,
+            "responseType": "int",
+            "publisherDescriptions": []
+        },
+        {
+            "id": 4,
+            "responseType": "int",
+            "publisherDescriptions": []
+        },
+        {
+            "id": 10,
+            "responseType": "bool",
+            "publisherDescriptions": []
+        },
+        {
+            "id": 14,
+            "responseType": "int",
+            "publisherDescriptions": {
+            "pin_input": "2"
+        }
+        },
+        {
+            "id": 16,
+            "responseType": "float",
+            "publisherDescriptions": {
+         "pin_out": "6"
+        }
+        },
+        {
+            "id": 17,
+            "responseType": "int",
+            "publisherDescriptions": {
+            "pin_out": "8"
+        }
+        }
+    ],
+    "status": 1
 }
 ```
 

@@ -32,14 +32,14 @@ security:
         password_path: password
         success_handler: lexik_jwt_authentication.handler.authentication_success
         failure_handler: lexik_jwt_authentication.handler.authentication_failure
-#    api_request:
-#      provider: api_user_provider
-#      json_login:
-#        check_path: /api_authentication_token
-#        username_path: username
-#        password_path: password
-#        success_handler: lexik_jwt_authentication.handler.authentication_success
-#        failure_handler: lexik_jwt_authentication.handler.authentication_failure
+    #    api_request:
+    #      provider: api_user_provider
+    #      json_login:
+    #        check_path: /api_authentication_token
+    #        username_path: username
+    #        password_path: password
+    #        success_handler: lexik_jwt_authentication.handler.authentication_success
+    #        failure_handler: lexik_jwt_authentication.handler.authentication_failure
     main:
       pattern: ^/
       provider: users_in_memory
@@ -61,6 +61,8 @@ security:
   # Note: Only the *first* access control that matches will be used
   access_control:
     - { path: /login, roles: PUBLIC_ACCESS }
+    - { path: /arduino/imitation, roles: PUBLIC_ACCESS }
+#    - { path: /api/api-authentication, roles: PUBLIC_ACCESS }
     - { path: /registration, roles: PUBLIC_ACCESS }
     - { path: ^/login/check, roles: PUBLIC_ACCESS }
     - { path: /, roles: ROLE_USER }

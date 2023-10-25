@@ -36,7 +36,8 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="locationChangeData" tabindex="-1" aria-labelledby="locationChangeDataLabel" aria-hidden="true">
+    <div class="modal fade" id="locationChangeData" tabindex="-1" aria-labelledby="locationChangeDataLabel"
+         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -44,7 +45,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    {{ form_start(formLocationData, {'attr': {'id': 'location-form', 'action': path('app_add_location'), 'method': 'post'}}) }}
+                    {{ form_start(formLocationData, {'attr': {'id': 'location-change-form', 'action': path('app_location_change_data'), 'method': 'post'}}) }}
                     {{ form_errors(formLocationData) }}
                     <div class="mb-3">
                         <label class="form-label vasilek b1">Name</label>
@@ -62,7 +63,7 @@
                     {{ form_end(formLocationData) }}
                 </div>
                 <div class="modal-footer">
-                    <button class="btn-add-room text-center b2" type="submit" form="location-form">Add room</button>
+                    <button class="btn-add-room text-center b2" type="submit" form="location-change-form">Edit room</button>
                 </div>
             </div>
         </div>
@@ -74,17 +75,20 @@
             <div class="col-12">
                 <div class="info">
                     <h3 class="text-center vasilek mb-1">How to use it?</h3>
-                    <div class="b1 text-color text-center">See <a href="#" class="vasilek">user help</a> guide, to use it good</div>
+                    <div class="b1 text-color text-center">See <a href="#" class="vasilek">user help</a> guide, to use
+                        it good
+                    </div>
                 </div>
             </div>
-{#            <div class="m-3 col-12 col-sm-12 col-md-8">#}
-{#                <div class="chart"></div>#}
-{#            </div>#}
+            {# <div class="m-3 col-12 col-sm-12 col-md-8"> #}
+            {# <div class="chart"></div> #}
+            {# </div> #}
         </div>
         <div class="row mt-2">
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
                 <div class="add-text b1 vasilek d-flex justify-content-start">
-                    <a href="#add_room" class="vasilek text-decoration-none d-flex justify-content-center" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <a href="#add_room" class="vasilek text-decoration-none d-flex justify-content-center"
+                       data-bs-toggle="modal" data-bs-target="#exampleModal">
                         <img src="{{ asset('img/svg/plus.svg') }}" alt="add" class="me-1">Add room
                     </a>
                 </div>
@@ -100,9 +104,12 @@
                                  alt="nothing">
                             <h3 class="room-name mx-auto d-flex justify-content-center">
                                 <a class="vasilek text-decoration-none me-1"
-                                        href="{{ path('app_location') }}#{{ location.id }}">{{ location.name }}
+                                   href="{{ path('app_location') }}#{{ location.id }}">{{ location.name }}
                                 </a>
-                                <a href="#change-location" data-bs-toggle="modal" data-bs-target="#locationChangeData" onclick="selectLocation({{location.id}})"><img class="ms-1" src="{{ asset('img/svg/edit.svg') }}" alt="edit"></a>
+                                <a href="#change-location" data-bs-toggle="modal" data-bs-target="#locationChangeData"
+                                   onclick="selectLocation({{ location.id }})"><img class="ms-1"
+                                                                                    src="{{ asset('img/svg/edit.svg') }}"
+                                                                                    alt="edit"></a>
                             </h3>
                         </div>
                     </div>
@@ -125,10 +132,18 @@
 {% endblock %}
 {% block javascripts %}
 
-{{ parent() }}
+    {{ parent() }}
     <script>
         function selectLocation(locationId) {
-            $('#location_data_id').value = locationId;
+            $.get(`/location/${locationId}/get`, function (data) {
+                let select = document.querySelector('#location_data_icon_image');
+                console.log(data);
+                $('#location_data_id').val(locationId);
+                $('#location_data_name').val(data.name);
+                if (data.iconImage) {
+                    select.value = data.iconImage;
+                }
+            })
         }
     </script>
 {% endblock %}

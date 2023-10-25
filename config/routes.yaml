@@ -32,6 +32,7 @@ app_dashboard:
 
 app_location_change_data:
   path: /location/data/change
+  controller: App\Controller\AppController::changeLocation
 
 app_location:
   path: /location
@@ -40,6 +41,12 @@ app_location:
 app_get_publisher:
   path: /location/{location}/get/publisher
   controller: App\Controller\AppController::getPublishers
+  requirements:
+    location: '\d+'
+
+app_get_location:
+  path: /location/{location}/get
+  controller: App\Controller\AppController::getLocation
   requirements:
     location: '\d+'
 
@@ -65,3 +72,7 @@ api_get_sensors:
 api_get_devices:
   path: /api/devices/get
   controller: App\Controller\IntegratedSystemController::getDevices
+
+arduino_immitation:
+  path: /arduino/imitation
+  controller: App\Controller\AppController::arduinoImitation

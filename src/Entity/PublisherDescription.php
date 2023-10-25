@@ -64,4 +64,16 @@ class PublisherDescription
 
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function getAsArray()
+    {
+        return [
+            'id' => $this->getPublisher()->getId(),
+            'alias' => $this->getPublisherSetting()->getAlias(),
+            'value' => $this->getValue()
+        ];
+    }
 }

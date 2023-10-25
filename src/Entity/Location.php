@@ -41,6 +41,9 @@ class Location
         return $this->id;
     }
 
+    /**
+     * @return string|null
+     */
     public function getName(): ?string
     {
         return $this->name;
@@ -58,7 +61,7 @@ class Location
         return $this->icon;
     }
 
-    public function setIcon(string $icon): static
+    public function setIcon(?string $icon): static
     {
         $this->icon = $icon;
 

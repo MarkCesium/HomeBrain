@@ -36,6 +36,12 @@ class LocationRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
+    /**
+     * @param int $locationId
+     * @param int $userId
+     * @return int|mixed|string|null
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function findUserLocation(int $locationId, int $userId)
     {
         $query = $this->getEntityManager()->createQueryBuilder()
@@ -60,6 +66,19 @@ class LocationRepository extends ServiceEntityRepository
             ->leftJoin('l.userLocations', 'ul', 'l.userLocations=ul.location')
             ->where('ul.user = :userId AND l.id = :locationId')
             ->setParameter('userId', $userId)
+            ->setParameter('locationId', $locationId)
+            ->getQuery();
+
+        return $query->getResult();
+    }
+
+    public function getLocationPublishers(int $locationId)
+    {
+        $query = $this->getEntityManager()->createQueryBuilder()
+            ->select('p')
+            ->from(Publisher::class, 'p')
+            ->leftJoin('p.location', 'l', 'p.location=l.id')
+            ->where('l.id = :locationId')
             ->setParameter('locationId', $locationId)
             ->getQuery();
 

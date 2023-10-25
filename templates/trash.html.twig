@@ -1,73 +1,149 @@
-<div class="col-sm-12">
-    {{ form_start(form) }}
-    <div class="row">
-        <div class="col-sm-8">
-            <h3>Base data</h3>
-            {{ form_row(form.name) }}
-            {{ form_row(form.active) }}
-            {{ form_row(form.orderNumber) }}
-            {{ form_row(form.description, {'attr':{'rows': 6}}) }}
-            {{ form_row(form.category, {'placeholder': 'Change category (not require)'}) }}
-
-            {% if form.vars.value.id is not null %}
-                <div class="form-group">
-                    <button type="button" class="btn btn-primary btn-lg btn-block" data-toggle="modal"
-                            data-target="#myModal">
-                        File Manager <span class="glyphicon glyphicon-folder-open"></span>
-                    </button>
-                    <img src="" class="img-responsive" id="image" alt="">
-                </div>
-            {% endif %}
-
-            <input type="submit" class="btn btn-success ">
-            <a role="button"
-               href="{{ path(constant('AppBundle\\Controller\\Admin\\ShowpieceController::SHOWPIECE_ADMIN_ACTION'), {'category': category}) }}"
-               class="btn btn-primary">back</a>
-        </div>
-        <div class="col-sm-4">
-            <h3>Description fields</h3>
-            <div class="description-fields-container">
-                <div class="list-group"
-                     data-prototype="{{ form_widget(form.descriptionFields.vars.prototype)|e('html_attr') }}">
-                    {% for field in form.descriptionFields %}
-                        <a href="#" class="list-group-item">
-                            <h4 class="list-group-item-heading">Description field №{{ loop.index }}</h4>
-                            {{ form_row(field.name) }}
-                            {{ form_row(field.description) }}
-                            {{ form_row(field.orderNumber) }}
-                            {{ form_row(field.active) }}
-                        </a>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-    {{ form_end(form) }}
-</div>
+{% block javascripts %}
+    {{ encore_entry_script_tags('app') }}
+{% endblock %}
 <script>
-    $(document).ready(function () {
-        $collectionHolder = $('.description-fields-container .list-group');
-        $collectionHolder.append($newLinkLi);
-        $collectionHolder.data('index', $collectionHolder.find(':input').length);
-
-        $addTagLink.on('click', function (e) {
-            e.preventDefault();
-            addTagForm($collectionHolder, $newLinkLi);
-        });
-
-        $collectionHolder.find('.list-group-item').each(function () {
-            addTagFormDeleteLink($(this));
-        });
-    });
-
-    function addTagForm($collectionHolder, $newLinkLi) {
-        var prototype = $collectionHolder.data('prototype');
-        var index = $collectionHolder.data('index');
-        var newForm = prototype;
-        newForm = newForm.replace(/name/g, index);
-        $collectionHolder.data('index', index + 1);
-        var $newFormLi = $('<a href="#" class="list-group-item"><h4 class="list-group-item-heading">New</h4></a>').append(newForm);
-        $newLinkLi.before($newFormLi);
-        addTagFormDeleteLink($newFormLi);
+    function getRandomArbitrary(min, max) {
+        return (Math.random() * (max - min) + min).toFixed(2);
     }
+
+    let interval;
+
+    window.addEventListener("DOMContentLoaded", function () {
+        function getToken() {
+
+            return new Promise(function (resolve, reject) {
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', 'http://homebrain2/api/api-authentication', true);
+                xhr.setRequestHeader('Accept', 'application/json');
+                xhr.setRequestHeader('Content-Type', 'application/json');
+
+
+                xhr.onload = function () {
+                    if (this.status == 200) {
+                        resolve(this.response);
+                    } else {
+                        var error = new Error(this.statusText);
+                        error.code = this.status;
+                        reject(error);
+                    }
+                };
+
+                xhr.onerror = function () {
+                    reject(new Error("Network Error"));
+                };
+
+                xhr.send(JSON.stringify({
+                    "username": "e001",
+                    "password": "1234"
+                }));
+            });
+
+        }
+
+        function sendData(socket, token) {
+            let data = {
+                'token': token,
+                'data': [
+                    {
+                        "id": 1,
+                        "value": getRandomArbitrary(0, 100),
+                    },
+                    {
+                        "id": 2,
+                        "value": getRandomArbitrary(0, 100)
+                    },
+                    {
+                        "id": 3,
+                        "value": getRandomArbitrary(0, 100)
+                    },
+                    {
+                        "id": 4,
+                        "value": getRandomArbitrary(0, 100)
+                    },
+                    {
+                        "id": 5,
+                        "value": getRandomArbitrary(0, 100),
+                    },
+                    {
+                        "id": 6,
+                        "value": getRandomArbitrary(0, 100)
+                    },
+                    {
+                        "id": 7,
+                        "value": getRandomArbitrary(0, 100)
+                    },
+                    {
+                        "id": 8,
+                        "value": getRandomArbitrary(0, 100)
+                    },
+                    {
+                        "id": 9,
+                        "value": getRandomArbitrary(0, 100),
+                    },
+                    {
+                        "id": 10,
+                        "value": getRandomArbitrary(0, 100)
+                    },
+                    {
+                        "id": 11,
+                        "value": getRandomArbitrary(0, 100)
+                    },
+                    {
+                        "id": 12,
+                        "value": getRandomArbitrary(0, 100)
+                    },
+                    {
+                        "id": 13,
+                        "value": getRandomArbitrary(0, 100),
+                    },
+                    {
+                        "id": 14,
+                        "value": getRandomArbitrary(0, 100)
+                    },
+                    {
+                        "id": 15,
+                        "value": getRandomArbitrary(0, 100)
+                    },
+                    {
+                        "id": 16,
+                        "value": getRandomArbitrary(0, 100)
+                    },
+                    {
+                        "id": 17,
+                        "value": getRandomArbitrary(0, 100),
+                    },
+                    {
+                        "id": 18,
+                        "value": getRandomArbitrary(0, 100)
+                    },
+                    {
+                        "id": 19,
+                        "value": getRandomArbitrary(0, 100)
+                    },
+                    {
+                        "id": 20,
+                        "value": getRandomArbitrary(0, 100)
+                    },
+                ]
+            }
+            console.log(1);
+            socket.send(JSON.stringify(data));
+            console.log(2);
+        }
+
+        function sendSensorData(socket, token) {
+            socket.addEventListener("open", function () {
+                console.log("CONNECTED");
+                interval = setInterval(() => sendData(socket, token), 1000);
+            });
+        }
+
+        getToken()
+            .then(data => {
+                const socket = new WebSocket("ws://homebrain2:3003");
+                sendSensorData(socket, JSON.parse(data).token);
+            })
+    })
+
 </script>

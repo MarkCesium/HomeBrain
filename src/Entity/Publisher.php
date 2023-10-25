@@ -36,9 +36,13 @@ class Publisher
     #[ORM\Column(length: 255)]
     private ?string $responseType = null;
 
+    #[ORM\OneToMany(mappedBy: 'publisher', targetEntity: PublisherValueArchieve::class, orphanRemoval: true)]
+    private Collection $publisherValueArchieves;
+
     public function __construct()
     {
         $this->publisherDescriptions = new ArrayCollection();
+        $this->publisherValueArchieves = new ArrayCollection();
     }
 
     public function __toString(): string
@@ -166,19 +170,22 @@ class Publisher
         $publisherDescriptions = [];
         $descriptions = $this->getPublisherDescriptions();
         foreach ($descriptions as $pd) {
-//            $publisherDescription = [];
             $setting = $pd->getPublisherSetting();
-            $publisherDescriptions[$setting->getAlias()] = $pd->getValue();
-//            $publisherDescriptions[] = $publisherDescription;
+            if ($setting->getFieldsGroup() === 'activation') {
+                $publisherDescriptions[$setting->getAlias()] = $pd->getValue();
+            }
         }
 
         return [
             'id' => $this->getId(),
-            'responseType' => $this->getResponseType(),
+            'type' => $this->getType(),
             'publisherDescriptions' => $publisherDescriptions
         ];
     }
 
+    /**
+     * @return array
+     */
     public function getAsArray(): array
     {
 
@@ -188,7 +195,8 @@ class Publisher
             'type' => $this->getType(),
             'location' => $this->location->getId(),
             'responseType' => $this->getResponseType(),
-            'value' => null
+            'value' => null,
+            'updated' => null
         ];
     }
     // /**+enter=phpDoc,
@@ -196,4 +204,34 @@ class Publisher
     // alt+click=cursor,
     // ctrl+shift+alt+J=equals words,
     // ctrl+alt+M=extract into new function
+
+    /**
+     * @return Collection<int, PublisherValueArchieve>
+     */
+    public function getPublisherValueArchieves(): Collection
+    {
+        return $this->publisherValueArchieves;
+    }
+
+    public function addPublisherValueArchiefe(PublisherValueArchieve $publisherValueArchiefe): static
+    {
+        if (!$this->publisherValueArchieves->contains($publisherValueArchiefe)) {
+            $this->publisherValueArchieves->add($publisherValueArchiefe);
+            $publisherValueArchiefe->setPublisher($this);
+        }
+
+        return $this;
+    }
+
+    public function removePublisherValueArchiefe(PublisherValueArchieve $publisherValueArchiefe): static
+    {
+        if ($this->publisherValueArchieves->removeElement($publisherValueArchiefe)) {
+            // set the owning side to null (unless already changed)
+            if ($publisherValueArchiefe->getPublisher() === $this) {
+                $publisherValueArchiefe->setPublisher(null);
+            }
+        }
+
+        return $this;
+    }
 }

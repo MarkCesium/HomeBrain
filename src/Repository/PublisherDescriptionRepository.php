@@ -21,6 +21,28 @@ class PublisherDescriptionRepository extends ServiceEntityRepository
         parent::__construct($registry, PublisherDescription::class);
     }
 
+    /**
+     * @param int[] $id
+     * @param string $fieldGroup
+     * @return int|mixed|string
+     */
+    public function getSensorsSettings(array $id, string $fieldGroup)
+    {
+        $query = $this->getEntityManager()->createQueryBuilder()
+            ->select('pd', 'ps')
+            ->from(PublisherDescription::class, 'pd')
+            ->join('pd.publisherSetting', 'ps', 'pd.publisherSetting=ps.publisherDescription')
+            ->where(
+                $this->getEntityManager()->createQueryBuilder()
+                    ->expr()
+                    ->in('pd.publisher', $id)
+            )
+            ->andWhere('ps.fieldsGroup = :fieldsGroup')
+            ->setParameter('fieldsGroup', $fieldGroup)
+            ->getQuery();
+
+        return $query->getResult();
+    }
 //    /**
 //     * @return PublisherDescription[] Returns an array of PublisherDescription objects
 //     */
