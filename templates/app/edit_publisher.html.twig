@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit: {{ name }}{% endblock %}
+
+{% block body %}
+    <div class="container-sm pt-1">
+        <div class="row d-flex justify-content-center">
+            <h1 class="vasilek text-center my-2">Edit: {{ name }}</h1>
+        </div>
+        <div class="row">
+            {{ form_start(form, {'attr': {'id': 'publisher-edit-form', 'action': path('app_edit_publisher', {'publisher': id})}}) }}
+            {{ form_errors(form) }}
+            <div class="mb-3">
+                <label class="form-label vasilek b1">Type</label>
+                {{ form_widget(form.type) }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label vasilek b1">Name</label>
+                {{ form_widget(form.name) }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label vasilek b1">Response type</label>
+                {{ form_widget(form.responseType) }}
+            </div>
+            <button type="button" class="add_item_link btn-add-room text-center b2 mb-3"
+                    data-collection-holder-class="publisherDescriptions">Add
+                a description
+            </button>
+            <div class="publisherDescriptions"
+                 data-index="{{ form.publisherDescriptions|length > 0 ? form.publisherDescriptions|last.vars.name + 1 : 0 }}"
+                 data-prototype="{{ form_widget(form.publisherDescriptions.vars.prototype)|e('html_attr') }}"
+            ></div>
+
+            <div id="descriptionForm"></div>
+            {{ form_end(form) }}
+            <div class="px-2 d-flex mb-3">
+                <button id="delete-location" class="btn-delete-room text-center b2 ms-1 me-auto"
+                        onclick="deletePublisher()">
+                    Delete publisher
+                </button>
+                <button class="btn-add-room text-center b2 me-1 ms-auto" type="submit" form="publisher-edit-form">
+                    Edit publisher
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+
+    {{ parent() }}
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            $('#publisher_data_publisherDescriptions fieldset').each((index, element) => {
+                console.log(element);
+                let btn = document.createElement("button");
+                btn.setAttribute('class', 'btn-delete-room text-center b2 me-auto');
+                btn.setAttribute('id', 'delete-setting');
+                btn.setAttribute('onclick', 'deleteSetting(this)');
+                btn.innerHTML = 'Delete setting';
+                element.append(btn);
+            });
+            for (let option of document.querySelectorAll('#publisher_data_type option')) {
+                if (option.getAttribute('selected') !== 'selected') {
+                    $(option).prop("disabled", true);
+                }
+            }
+
+            document.querySelector('.add_item_link').addEventListener("click", addFormToCollection);
+
+            function addFormToCollection(e) {
+                const collectionHolder = document.querySelector('.publisherDescriptions');
+
+                const item = document.createElement('div');
+                console.log(collectionHolder)
+                item.innerHTML = collectionHolder
+                    .dataset
+                    .prototype
+                    .replace(
+                        /__name__/g,
+                        collectionHolder.dataset.index
+                    );
+
+                collectionHolder.appendChild(item);
+
+                collectionHolder.dataset.index++;
+            }
+        })
+
+        function deletePublisher() {
+            let alright = confirm('Are you sure to delete this publisher?');
+            if (alright) {
+                $.get(`{{ path('app_delete_publisher', {'publisher': id}) }}`, function (data) {
+                    window.location.href = '/';
+                })
+            }
+        }
+
+        function deleteSetting(element) {
+            event.preventDefault();
+            element.parentElement.remove();
+        }
+    </script>
+{% endblock %}
+

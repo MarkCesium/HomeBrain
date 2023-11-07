@@ -30,6 +30,10 @@ app_dashboard:
   path: /dashboard
   controller: App\Controller\AppController::dashboard
 
+app_notices:
+  path: /notices
+  controller: App\Controller\AppController::notices
+
 app_location_change_data:
   path: /location/data/change
   controller: App\Controller\AppController::changeLocation
@@ -44,9 +48,27 @@ app_get_publisher:
   requirements:
     location: '\d+'
 
+app_edit_publisher:
+  path: /publisher/{publisher}/edit
+  controller: App\Controller\AppController::editPublisher
+  requirements:
+    publisher: '\d+'
+
 app_get_location:
   path: /location/{location}/get
   controller: App\Controller\AppController::getLocation
+  requirements:
+    location: '\d+'
+
+app_edit_location:
+  path: /location/{location}/edit
+  controller: App\Controller\AppController::editLocation
+  requirements:
+    location: '\d+'
+
+app_location_delete:
+  path: /location/{location}/delete
+  controller: App\Controller\AppController::deleteLocation
   requirements:
     location: '\d+'
 
@@ -54,9 +76,17 @@ app_add_publisher:
   path: /publisher/add
   controller: App\Controller\AppController::addPublisher
 
+app_delete_publisher:
+  path: /publisher/{publisher}/delete
+  controller: App\Controller\AppController::deletePublisher
+
 user_account:
   path: /user/account
   controller: App\Controller\UserController::account
+
+user_add_plate:
+  path: /user/addPlate
+  controller: App\Controller\UserController::regIOT
 
 api_login_check:
   path: /api/api-authentication

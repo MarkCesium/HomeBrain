@@ -1,0 +1,117 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit: {{ name }}{% endblock %}
+
+{% block body %}
+    <div class="container-sm pt-1">
+        <div class="row d-flex justify-content-center">
+            <h1 class="vasilek text-center my-2">Edit: {{ name }}</h1>
+        </div>
+        <div class="row">
+            <form name="location_data" method="post" id="location-change-form" action="/location/data/change" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label class="form-label vasilek b1">Name</label>
+                    <input type="text" id="location_data_name" name="location_data[name]" required="required" class="form-modal-input form-control" value="{{ name }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label vasilek b1">Icon file</label>
+                    <input type="file" id="location_data_icon" name="location_data[icon]" class="form-modal-input form-control">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label vasilek b1">Or choose our icon</label>
+                    <select id="location_data_icon_image" name="location_data[icon_image]" class="form-modal-input form-select">
+                        <option value=""></option>
+                        {% if icon_images is not empty %}
+                            {% for icon_image in icon_images %}
+                                <option value="{{ icon_image.id }}"  {{ icon_image.selected ? "selected='selected'" : "" }}>{{ icon_image.name }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label vasilek b1">Choose plate</label>
+                    <select id="location_data_UserApi" name="location_data[user_api]" required="required" class="form-modal-input form-select">
+                        <option value="">Choose an option</option>
+                        {% if plates is not empty %}
+                            {% for plate in plates %}
+                                <option value="{{ plate.id }}" {{ plate.selected ? "selected='selected'" : "" }}>{{ plate.name }}</option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <input type="hidden" id="location_data_id" name="location_data[id]" required="required" value="21">
+            </form>
+            <div class="px-2 d-flex">
+                <button id="delete-location" class="btn-delete-room text-center b2 ms-1 me-auto"
+                        onclick="deleteLocation({{ id }})">
+                    Delete room
+                </button>
+                <button class="btn-add-room text-center b2 me-1 ms-auto" type="submit" form="location-change-form">
+                    Edit room
+                </button>
+            </div>
+        </div>
+        <div class="mt-4 mb-2 px-2 row">
+            <h2 class="text-center vasilek">Sensors</h2>
+            <div class="row mx-0 my-1 px-sm-1 px-md-2 p-0">
+                {% if sensors is empty %}
+                    <h3 class="text-center text-color b1">You are not have any sensors in this location</h3>
+                {% else %}
+                    {% for sensor in sensors %}
+                        <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
+                            <div class="device-card d-flex">
+                                <div class="flex-row m-auto">
+                                    <a href="{{ path('app_edit_publisher', {'publisher': sensor.id}) }}"
+                                       class="publisher-link">
+                                        <h3 class="b2 text-center">{{ sensor.name }}</h3>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="mt-2 mb-2 px-2 row">
+            <h2 class="text-center vasilek">Devices</h2>
+            <div class="row mx-0 my-1 px-sm-1 px-md-2 p-0">
+                {% if sensors is empty %}
+                    <h3 class="text-center text-color b1">You are not have any devices in this location</h3>
+                {% else %}
+                    {% for device in devices %}
+                        <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
+                            <div class="device-card d-flex">
+                                <div class="flex-row m-auto">
+                                    <a href="{{ path('app_edit_publisher', {'publisher': device.id}) }}"
+                                       class="publisher-link">
+                                        <h3 class="b2 text-center">{{ device.name }}</h3>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+
+    {{ parent() }}
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+                $.get(`/location/{{ id }}/get`, (data) => {
+                    console.log(data);
+                })
+            }
+        );
+        function deleteLocation(locationId) {
+            let alright = confirm('Are you sure to delete this location? It is also delete all this publishers!');
+            if (alright) {
+                $.get(`/location/${locationId}/delete`, () => {
+                    window.location.href = '/';
+                })
+            }
+        }
+    </script>
+{% endblock %}

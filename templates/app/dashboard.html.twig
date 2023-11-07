@@ -1,5 +1,17 @@
 {% extends 'base.html.twig' %}
-
+{% block title %}Dashboard{% endblock %}
 {% block body %}
-    <h1 class="text-center">Dashboard</h1>
+    <div class="container-fluid">
+        <h1 class="text-center my-2 vasilek">Dashboard</h1>
+    </div>
+{% endblock %}
+{% block javascripts %}
+
+    {{ parent() }}
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+                $('#nav-dash').addClass('my-white');
+            }
+        );
+    </script>
 {% endblock %}

@@ -21,19 +21,27 @@ class Location
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $icon = null;
 
-    #[ORM\OneToMany(mappedBy: 'location', targetEntity: UserLocation::class)]
+    #[ORM\OneToMany(mappedBy: 'location', targetEntity: UserLocation::class, cascade: ['remove'])]
     private Collection $userLocations;
 
-    #[ORM\OneToMany(mappedBy: 'location', targetEntity: Publisher::class)]
+    #[ORM\OneToMany(mappedBy: 'location', targetEntity: Publisher::class, cascade: ['remove'])]
     private Collection $publishers;
 
     #[ORM\ManyToOne(inversedBy: 'location')]
     private ?IconImage $iconImage = null;
 
+    #[ORM\OneToMany(mappedBy: 'location', targetEntity: Notice::class, cascade: ['remove'], orphanRemoval: true)]
+    private Collection $notices;
+
+    #[ORM\ManyToOne(inversedBy: 'locations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?UserApi $UserApi = null;
+
     public function __construct()
     {
         $this->userLocations = new ArrayCollection();
         $this->publishers = new ArrayCollection();
+        $this->notices = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -136,6 +144,48 @@ class Location
     public function setIconImage(?IconImage $iconImage): static
     {
         $this->iconImage = $iconImage;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Notice>
+     */
+    public function getNotices(): Collection
+    {
+        return $this->notices;
+    }
+
+    public function addNotice(Notice $notice): static
+    {
+        if (!$this->notices->contains($notice)) {
+            $this->notices->add($notice);
+            $notice->setLocation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeNotice(Notice $notice): static
+    {
+        if ($this->notices->removeElement($notice)) {
+            // set the owning side to null (unless already changed)
+            if ($notice->getLocation() === $this) {
+                $notice->setLocation(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getUserApi(): ?UserApi
+    {
+        return $this->UserApi;
+    }
+
+    public function setUserApi(?UserApi $UserApi): static
+    {
+        $this->UserApi = $UserApi;
 
         return $this;
     }

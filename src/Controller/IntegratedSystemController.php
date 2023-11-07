@@ -17,7 +17,8 @@ class IntegratedSystemController extends AbstractController
      * @param UserInterface $user
      * @return Response
      */
-    public function getSensors(
+    public function getSensors
+    (
         EntityManagerInterface $em,
         UserInterface $user
     ): Response
@@ -39,7 +40,8 @@ class IntegratedSystemController extends AbstractController
      * @param UserInterface $user
      * @return Response
      */
-    public function getDevices(
+    public function getDevices
+    (
         EntityManagerInterface $em,
         UserInterface $user
     ): Response

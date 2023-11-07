@@ -23,8 +23,7 @@ class PublisherDescriptionType extends AbstractType
                 'class' => PublisherSetting::class,
                 'attr' => ['class' => 'form-modal-input '],
                 'choice_label' => 'name'
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Notices{% endblock %}
+
+{% block body %}
+    <h1 class="text-center my-2 vasilek">Notices</h1>
+    {% if notices is empty %}
+        <h2>You don't have any notices</h2>
+    {% else %}
+        <div class="notices container">
+            <ul class="list-group list-group-flush">
+                {% for notice in notices %}
+                    <li class="list-group-item notice-item d-flex">
+                        {% if notice.action == 1 %}
+                            <img class="notice-icon" src="{{ asset('img/svg/notices/warning.svg') }}" alt="warning">
+                        {% elseif notice.action == 2 %}
+                            <img class="notice-icon" src="{{ asset('img/svg/notices/added.svg') }}" alt="added">
+                        {% elseif notice.action == 3 %}
+                            <img class="notice-icon" src="{{ asset('img/svg/notices/removed.svg') }}" alt="removed">
+                        {% elseif notice.action == 0 %}
+                            <img class="notice-icon" src="{{ asset('img/svg/notices/test.svg') }}" alt="removed">
+                        {% endif %}
+                        <h3 class="text-color my-auto mx-2 ms-md-3 b2 notice-text">{{ notice.text }}</h3>
+                        <h4 class="b3 text-color-dis my-auto justify-content-end">{{ notice.time|date('Y-m-d h:m:s') }}</h4>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+{% endblock %}
+{% block javascripts %}
+
+    {{ parent() }}
+    <script>
+        window.addEventListener("DOMContentLoaded", () => {
+                $('#nav-notice').addClass('my-white');
+            }
+        );
+    </script>
+{% endblock %}

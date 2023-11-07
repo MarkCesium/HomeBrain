@@ -4,8 +4,10 @@ namespace App\Form;
 
 use App\Entity\IconImage;
 use App\Entity\Location;
+use App\Entity\UserApi;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -49,6 +51,14 @@ class LocationDataType extends AbstractType
                 'attr' => ['class' => 'form-modal-input'],
                 'choice_label' => 'title'
             ])
+            ->add('user_api', EntityType::class, [
+                'required' => true,
+                'mapped' => true,
+                'class' => UserApi::class,
+                'attr' => ['class' => 'form-modal-input'],
+                'choices' => $options['choices'],
+                'placeholder' => 'Choose an option'
+            ])
         ;
     }
 
@@ -56,7 +66,9 @@ class LocationDataType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Location::class,
-            'csrf_protection' => false
+            'csrf_protection' => false,
+            'choices' => []
         ]);
+        $resolver->setAllowedTypes('choices', 'array');
     }
 }

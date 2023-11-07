@@ -32,6 +32,8 @@ class PublisherDescriptionRepository extends ServiceEntityRepository
             ->select('pd', 'ps')
             ->from(PublisherDescription::class, 'pd')
             ->join('pd.publisherSetting', 'ps', 'pd.publisherSetting=ps.publisherDescription')
+//            ->join('pd.publisher', 'p', 'pd.publisher=p.id')
+//            ->join('p.location', 'l', 'p.location=l.id')
             ->where(
                 $this->getEntityManager()->createQueryBuilder()
                     ->expr()

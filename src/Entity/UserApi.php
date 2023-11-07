@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UserApiRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -29,10 +30,14 @@ class UserApi implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToOne(inversedBy: 'userApis')]
     private ?User $user = null;
 
+    #[ORM\OneToMany(mappedBy: 'UserApi', targetEntity: Location::class)]
+    private Collection $locations;
+
     public function __construct()
     {
         $this->roles = [];
         $this->userLocations = new ArrayCollection();
+        $this->locations = new ArrayCollection();
     }
 
     public function __toString()
@@ -133,9 +138,39 @@ class UserApi implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->user;
     }
 
-    public function setUser(?User $user): static
+    public function setUser(User|UserInterface $user): static
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Location>
+     */
+    public function getLocations(): Collection
+    {
+        return $this->locations;
+    }
+
+    public function addLocation(Location $location): static
+    {
+        if (!$this->locations->contains($location)) {
+            $this->locations->add($location);
+            $location->setUserApi($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLocation(Location $location): static
+    {
+        if ($this->locations->removeElement($location)) {
+            // set the owning side to null (unless already changed)
+            if ($location->getUserApi() === $this) {
+                $location->setUserApi(null);
+            }
+        }
 
         return $this;
     }

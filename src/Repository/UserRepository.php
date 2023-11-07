@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Entity\UserApi;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -21,6 +22,23 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
+    /**
+     * @param int $userId
+     * @return mixed
+     */
+    public function fingUserPlates(int $userId)
+    {
+        $query = $this->getEntityManager()->createQueryBuilder()
+            ->select('ua')
+            ->from(UserApi::class, 'ua')
+            ->join('ua.user', 'u', 'ua.user=u.id')
+            ->where('u.id = :userId')
+            ->setParameter('userId', $userId)
+            ->getQuery()
+        ;
+
+        return $query->getResult();
+    }
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */

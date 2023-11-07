@@ -15,15 +15,14 @@ class PublisherSettingType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-
+                'label' => false,
             ])
             ->add('alias', TextType::class, [
-
+                'label' => false,
             ])
             ->add('description', TextareaType::class, [
-
-            ])
-        ;
+                'label' => false,
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

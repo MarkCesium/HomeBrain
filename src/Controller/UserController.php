@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\UserApi;
 use App\Form\RegistrationType;
+use App\Form\UserApiDataType;
 use App\Form\UserDataType;
 use Doctrine\ORM\EntityManagerInterface;
 use ErrorException;
@@ -55,15 +57,62 @@ class UserController extends AbstractController
         ]);
     }
 
+    /**
+     * @param UserInterface $user
+     * @return Response
+     */
     public function account(
         UserInterface $user
     ): Response
     {
         $form = $this->createForm(UserDataType::class, $user);
-
+        $formIOT = $this->createForm(UserApiDataType::class);
+        $IOTs = [];
+        foreach ($user->getUserApis() as $item) {
+            $IOTs[] = ['id' => $item->getId(), 'name' => $item->getUsername()];
+        }
         return $this->render('user/account.html.twig', [
-            'form' => $form
+            'username' => $user->getUsername(),
+            'form' => $form,
+            'formIOT' => $formIOT,
+            'plates' => $IOTs
         ]);
+    }
+
+    /**
+     * @param UserPasswordHasherInterface $passwordHasher
+     * @param Request $request
+     * @param EntityManagerInterface $em
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function regIOT
+    (
+        UserPasswordHasherInterface $passwordHasher,
+        Request $request,
+        EntityManagerInterface $em,
+        UserInterface $user
+    )
+    {
+        $IOT = new UserApi();
+        $IOT->setUser($this->getUser());
+        $form = $this->createForm(UserApiDataType::class, $IOT);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $hashedPassword = $passwordHasher->hashPassword(
+                $IOT,
+                $IOT->getPassword()
+            );
+            $IOT->setPassword($hashedPassword);
+            try {
+                $em->persist($IOT);
+                $em->flush();
+                $this->addFlash('success', 'IoT was successful added!');
+            } catch (ErrorException) {
+                $this->addFlash('danger', 'Something went wrong!');
+            }
+        }
+
+        return $this->redirectToRoute('user_account');
     }
 
     public function change(
@@ -77,10 +126,6 @@ class UserController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $avatar = $form->get('avatar')->getData();
-            if ((!$avatar && !$user->getAvatar()) || ($user->getAvatar() && $avatar)) {
-                $this->addFlash('danger', 'Something went wrong!');
-                $this->redirectToRoute('index');
-            }
             if ($avatar) {
                 $originalFilename = pathinfo($avatar->getClientOriginalName(), PATHINFO_FILENAME);
                 $safeFilename = $slugger->slug($originalFilename);

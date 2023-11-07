@@ -4,13 +4,22 @@ namespace App\Form;
 
 use App\Entity\IconImage;
 use App\Entity\Location;
+use App\Entity\UserApi;
+use App\Repository\UserApiRepository;
+use App\Repository\UserRepository;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\VarDumper\VarDumper;
 
 class LocationType extends AbstractType
 {
@@ -42,7 +51,20 @@ class LocationType extends AbstractType
                 'required' => false,
                 'attr' => ['class' => 'form-modal-input'],
                 'choice_label' => 'title'
-            ]);
+            ])
+            ->add('user_api', EntityType::class, [
+                'class' => UserApi::class,
+                'required' => true,
+                'choice_label' => 'username'
+            ])
+//            ->add('UserApi', ChoiceType::class, [
+//                'required' => true,
+//                'mapped' => false,
+//                'class' => UserApi::class,
+//                'attr' => ['class' => 'form-modal-input'],
+//                'choices' => $options['choices'],
+//                'placeholder' => 'Choose an option'
+//            ])
         ;
     }
 
@@ -50,6 +72,9 @@ class LocationType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Location::class,
+            'csrf_protection' => false,
+            'choices' => []
         ]);
+        $resolver->setAllowedTypes('choices', 'array');
     }
 }

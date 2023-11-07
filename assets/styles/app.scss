@@ -26,6 +26,14 @@
   background-color: rgba(110, 158, 249, 0.25);
 }
 
+.bg-good-dis {
+  background-color: rgba(85, 213, 85, 0.25);
+}
+
+.bg-bad-dis {
+  background-color: #E85A4F;
+}
+
 .vasilek {
   color: #6E9EF9;
 }
@@ -71,6 +79,10 @@ h3 {
 
 .text-color {
   color: #232323;
+}
+
+.text-color-dis {
+  color: rgba(35, 35, 35, 0.5);
 }
 
 .my-white {
@@ -125,17 +137,54 @@ h3 {
 }
 
 .device-card {
-  min-height: 200px;
-  min-width: 200px;
+  height: 200px;
+  width: 200px;
   border-radius: 10px;
   background-color: rgba(110, 158, 249, 0.25);
+}
+
+.device-form {
+  width: 200px;
+  padding: 0 4px;
+}
+
+.device-input {
+  display: flex;
+  padding: 0 4px;
+  height: 30px;
+  width: available;
+  border: 2px solid #6E9EF9;
+  border-radius: 10px;
+  color: #232323;
+}
+
+.device-input:active,
+.device-input:focus,
+.device-input:hover {
+  border: 2px solid #6E9EF9;
+}
+
+.btn-device-input {
+  height: fit-content;
+  width: fit-content;
+  padding: 4px;
+  border: 2px solid #6E9EF9;
+  color: #232323;
+  background: transparent;
+}
+
+.btn-device-input:active,
+.btn-device-input:focus,
+.btn-device-input:hover {
+  color: #EBEBEB;
+  background: #6E9EF9;
 }
 
 .sensor-card {
   min-height: 200px;
   min-width: 200px;
   border-radius: 10px;
-  background-color: rgba(110, 158, 249, 0.25);
+  //background-color: rgba(110, 158, 249, 0.25);
 }
 
 .room-card {
@@ -196,6 +245,23 @@ button:hover {
   color: #6E9EF9;
 }
 
+.btn-delete-room {
+  font-family: 'Nunito';
+  border: 2px solid #E85A4F;
+  border-radius: 10px;
+  background: #E85A4F;
+  color: #EBEBEB;
+  width: fit-content;
+}
+
+.btn-delete-room:active,
+.btn-delete-room:focus,
+.btn-delete-room:hover {
+  background-color: #FFFFFF;
+  color: #E85A4F;
+}
+
+
 #user-link:focus,
 #user-link:hover {
   color: #EBEBEB;
@@ -205,4 +271,33 @@ li.nav-item a.nav-link:focus,
 li.nav-item a.nav-link:hover,
 li.nav-item a.nav-link:active {
   color: #EBEBEB;
+  background-color: #6E9EF9;
+}
+
+.list-group {
+  --bs-list-group-border-width: none;
+}
+
+section.rooms-widget a.list-group-item {
+  border: none;
+  background-color: rgba(110, 158, 249, 0.25);
+}
+
+section.rooms-widget a.list-group-item.active {
+  color: #6E9EF9;
+  background-color: rgba(110, 158, 249, 0.25);
+  border: none;
+  //border-color: rgba(110, 158, 249, 0.25);
+}
+
+.notice-text {
+  width: 100%;
+  display: flex;
+  justify-content: start;
+}
+
+.notice-icon {
+  max-width: 100px;
+  min-width: 50px;
+  height: auto;
 }

@@ -44,6 +44,24 @@ class PublisherRepository extends ServiceEntityRepository
         return $query->getResult();
     }
 
+    public function findUserPublisher(int $userId, int $publisherId)
+    {
+        $query = $this->getEntityManager()->createQueryBuilder()
+            ->select('p', 'pd', 'ps')
+            ->from(Publisher::class, 'p')
+            ->leftJoin('p.location', 'l', 'p.location=l.id')
+            ->leftJoin('l.userLocations', 'ul', 'l.userLocations=ul.location')
+            ->leftJoin('p.publisherDescriptions', 'pd', 'p.publisherDescriptions=pd.publisher')
+            ->leftJoin('pd.publisherSetting', 'ps', 'pd.publisherSetting=ps.publisherDescription')
+            ->where('ul.user = :userId')
+            ->andWhere('p.id = :publisherId')
+            ->setParameter('userId', $userId)
+            ->setParameter('publisherId', $publisherId)
+            ->getQuery();
+
+        return $query->getOneOrNullResult();
+    }
+
 //    /**
 //     * @return Publisher[] Returns an array of Publisher objects
 //     */

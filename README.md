@@ -1,4 +1,22 @@
-"# HomeBrain"
+# HomeBrain
+
+```
+request:
+POST http://homebrain2/api/api-authentication
+Content-Type: application/json
+
+{
+  "username": "e001",
+  "password": "1234"
+}
+
+response:
+POST http://homebrain2/api/api-authentication
+
+{
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2OTY2MDUwMjAsImV4cCI6MTY5NjYwODYyMCwicm9sZXMiOlsiUk9MRV9VU0VSIl0sInVzZXJuYW1lIjoiZTAwMSJ9.L3F7aHNZ481IW_XEwJzmuoHuAxhZILmAmfkjpQvIcfvfNdr8vV46cKSXphT0jePv7rTx3s96h1QmP6_LE8TvNkpcMfs8v-01tYo7ghaPkS4zOrqgOS7iiUuL3ZRasMaYItM0B7IA5dR-OH-QRoV9vMC4tXupVxPM-K8wuVGfrY-uba50SRb_Nspd0E8P8BOiR-UBDXyUNdLHbYbuqmle1OWJ0-T7oJ2LgRIhTaZnHBXetHx9dpvH-aWXRbMOe0Kry2irnbphGmTsboTWn5YJcN0YPDBSYLJLfnHOj4JIqZf0rcdWi90gyOS9lD2CEyw1lnfLnVg-Gy_nWRcoMhYjSA"
+}
+```
 
 ```
 request:
@@ -65,24 +83,6 @@ GET http://homebrain2/api/sensors/get
         }
     ],
     "status": 1
-}
-```
-
-```
-request:
-POST http://homebrain2/api/api-authentication
-Content-Type: application/json
-
-{
-  "username": "e001",
-  "password": "1234"
-}
-
-response:
-POST http://homebrain2/api/api-authentication
-
-{
-  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2OTY2MDUwMjAsImV4cCI6MTY5NjYwODYyMCwicm9sZXMiOlsiUk9MRV9VU0VSIl0sInVzZXJuYW1lIjoiZTAwMSJ9.L3F7aHNZ481IW_XEwJzmuoHuAxhZILmAmfkjpQvIcfvfNdr8vV46cKSXphT0jePv7rTx3s96h1QmP6_LE8TvNkpcMfs8v-01tYo7ghaPkS4zOrqgOS7iiUuL3ZRasMaYItM0B7IA5dR-OH-QRoV9vMC4tXupVxPM-K8wuVGfrY-uba50SRb_Nspd0E8P8BOiR-UBDXyUNdLHbYbuqmle1OWJ0-T7oJ2LgRIhTaZnHBXetHx9dpvH-aWXRbMOe0Kry2irnbphGmTsboTWn5YJcN0YPDBSYLJLfnHOj4JIqZf0rcdWi90gyOS9lD2CEyw1lnfLnVg-Gy_nWRcoMhYjSA"
 }
 ```
 

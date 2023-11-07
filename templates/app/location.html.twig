@@ -1,5 +1,5 @@
 {% extends 'base.html.twig' %}
-
+{% block title %}Location...{% endblock %}
 {% block body %}
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -43,7 +43,7 @@
         </div>
     </div>
     <div class="container-fluid pt-1">
-        <div class="row d-flex">
+        <div class="row d-flex justify-content-center">
             <h1 class="vasilek text-center my-2" data-bind="text: name"></h1>
         </div>
         <div class="row">
@@ -65,15 +65,29 @@
                     <div class="row mx-0 my-1 px-sm-1 px-md-2 p-0" data-bind="foreach: devices">
                         <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
                             <div class="device-card d-flex">
-                                <div class="flex-row m-auto">
-                                    <h3 class="b2 text-center" data-bind="text: name"></h3>
-                                    <div class="b2 text-center" data-bind="text: value"></div>
-                                    <div class="b3 text-center align-bottom" data-bind="text: updated"></div>
+                                <div class="my-auto">
+                                    <h3 class="b2 text-center w-100" data-bind="text: name"></h3>
+                                    <form class="device-form" data-bind="attr: {data: id}">
+                                        <!-- ko if: responseType=='int' || responseType=='float' -->
+                                        <input type="text" class="device-input d-flex my-2"
+                                               placeholder="Enter value to device">
+                                        <!-- /ko -->
+                                        <!-- ko if: responseType=='bool' -->
+                                        <div class="d-flex my-2 justify-content-start">
+                                            <h3 class="b3 me-2">Off/On</h3>
+                                            <div class="form-check form-switch ms-auto">
+                                                <input class="form-check-input" type="checkbox" role="switch">
+                                            </div>
+                                        </div>
+                                        <!-- /ko -->
+                                        <button class="btn-device-input text-center b3 my-2" type="submit"
+                                                onclick="sendDevice()">Send
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
                 <div class="my-2 px-2 row">
                     <h2 class="text-center vasilek">Sensors</h2>
@@ -91,7 +105,7 @@
                     </div>
                     <div class="row mx-0 my-2 px-sm-1 px-md-2 p-0" data-bind="foreach: sensors">
                         <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
-                            <div class="sensor-card d-flex">
+                            <div class="sensor-card d-flex bg-vasilek-dis" data-bind="attr: {id: id}">
                                 <div class="flex-row m-auto">
                                     <h3 class="b2 text-center" data-bind="text: name"></h3>
                                     <div class="b2 text-center" data-bind="text: value"></div>
@@ -123,7 +137,7 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        const socket = new WebSocket("ws://homebrain2:3001");
+        const socketSensor = new WebSocket("ws://homebrain2:3001");
         let interval;
         let viewFunctions = {
             changeRoom: function (data, event) {
@@ -137,11 +151,11 @@
                     return 0;
                 }
                 $.get(`/location/${location}/get/publisher`, function (data) {
-                    console.log(data);
                     if (data.status === 0) {
                         window.location.href = '/';
                         return 0;
                     }
+                    document.title = data.data.name;
                     viewModel.name(data.data.name);
                     for (let sensor of data.data.sensors) {
                         sensor.value = ko.observable(sensor.value);
@@ -153,7 +167,7 @@
                     }
                     viewModel.sensors(data.data.sensors);
                     viewModel.devices(data.data.devices);
-                    interval = setInterval(() => sendData(socket, location), 1000);
+                    interval = setInterval(() => sendData(socketSensor, location), 1000);
                 });
             }
         }
@@ -165,7 +179,6 @@
         }
         ko.applyBindings(viewModel);
 
-        // TODO: учесть несуществующие комнаты!
         window.addEventListener("DOMContentLoaded", function () {
             let location = window.location.hash.slice(1);
             if (location === '') {
@@ -174,11 +187,11 @@
             }
             $(`[data-location='${location}']`).addClass('active');
             $.get(`/location/${location}/get/publisher`, function (data) {
-                console.log(data);
                 if (data.status === 0) {
                     window.location.href = '/';
                     return 0;
                 }
+                document.title = data.data.name;
                 viewModel.name(data.data.name);
                 for (let sensor of data.data.sensors) {
                     sensor.value = ko.observable(sensor.value);
@@ -218,7 +231,6 @@
                 const collectionHolder = document.querySelector('.publisherDescriptions');
 
                 const item = document.createElement('div');
-                console.log(collectionHolder)
                 item.innerHTML = collectionHolder
                     .dataset
                     .prototype
@@ -232,45 +244,54 @@
                 collectionHolder.dataset.index++;
             }
 
-            socket.addEventListener("open", function () {
+            socketSensor.addEventListener("open", function () {
                 console.log("CONNECTED");
-                interval = setInterval(() => sendData(socket, location), 1000);
-                console.log('lalal')
+                interval = setInterval(() => sendData(socketSensor, location), 1000);
             });
-            socket.addEventListener('message', function (msg) {
+            socketSensor.addEventListener('message', function (msg) {
                 const dataRaw = JSON.parse(msg.data);
                 let data = dataRaw.map(item => {
                     return JSON.parse(item);
                 });
-                console.log(data);
                 let sensors = viewModel.sensors();
-                let devices = viewModel.devices();
                 for (let sensor of sensors) {
                     for (const sensorData of data) {
                         if (sensorData.id === sensor.id) {
-                            if (sensor.responseType === "int") {
-                                sensor.value(Math.floor(sensorData.value));
-                            } else if (sensor.responseType === "float") {
-                                sensor.value(parseFloat(sensorData.value).toFixed(2))
-                            } else if (sensor.responseType === "bool") {
-                                for (let status of sensorData.validation) {
-                                    if (status.isOk) {
+                            let isOk = true;
+                            if (!('validation' in sensorData)) {
+                                if (sensor.responseType === "int") {
+                                    sensor.value(Math.floor(sensorData.value));
+                                } else if (sensor.responseType === "float") {
+                                    sensor.value(parseFloat(sensorData.value).toFixed(2))
+                                } else if (sensor.responseType === "bool") {
+                                    sensor.value('No condition');
+                                }
+                                sensor.updated(timeConverter(sensorData.updated));
+                                break;
+                            }
+                            for (let status of sensorData.validation) {
+                                if (status.isOk && isOk) {
+                                    if (sensor.responseType === "int") {
+                                        sensor.value(Math.floor(sensorData.value));
+                                    } else if (sensor.responseType === "float") {
+                                        sensor.value(parseFloat(sensorData.value).toFixed(2))
+                                    } else if (sensor.responseType === "bool") {
                                         sensor.value('Okay');
-                                    } else {
+                                    }
+                                    $(`#${sensor.id}`).removeClass('bg-vasilek-dis').removeClass('bg-bad-dis').addClass('bg-good-dis');
+                                } else {
+                                    isOk = false
+                                    if (sensor.responseType === "int") {
+                                        sensor.value(Math.floor(sensorData.value));
+                                    } else if (sensor.responseType === "float") {
+                                        sensor.value(parseFloat(sensorData.value).toFixed(2))
+                                    } else if (sensor.responseType === "bool") {
                                         sensor.value('Warning!');
                                     }
+                                    $(`#${sensor.id}`).removeClass('bg-vasilek-dis').removeClass('bg-good-dis').addClass('bg-bad-dis');
                                 }
                             }
                             sensor.updated(timeConverter(sensorData.updated));
-                            break;
-                        }
-                    }
-                }
-                for (let device of devices) {
-                    for (const deviceData of data) {
-                        if (deviceData.id === device.id) {
-                            device.value(Math.floor(deviceData.value));
-                            device.updated(timeConverter(deviceData.updated));
                             break;
                         }
                     }
@@ -282,14 +303,16 @@
             socket.send(JSON.stringify(location));
         }
 
+        function sendDevice() {
+            event.preventDefault();
+            console.log(new FormData(event.target));
+        }
+
         function timeConverter(UNIX_timestamp) {
             const a = new Date(UNIX_timestamp * 1000);
             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             const month = months[a.getMonth()];
             const date = a.getDate();
-            // const hour = a.getHours();
-            // const min = a.getMinutes();
-            // const sec = a.getSeconds();
             let datetime = (a.getHours() < 10 ? "0" : "") + a.getHours() + ":" + (a.getMinutes() < 10 ? "0" : "") + a.getMinutes() + ":" + (a.getSeconds() < 10 ? "0" : "") + a.getSeconds();
             return `${date}-${month} ${datetime}`;
         }

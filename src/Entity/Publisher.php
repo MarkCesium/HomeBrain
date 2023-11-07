@@ -183,10 +183,29 @@ class Publisher
         ];
     }
 
+    public function getAsArray(): array
+    {
+        $publisherDescriptions = [];
+        $descriptions = $this->getPublisherDescriptions();
+        foreach ($descriptions as $pd) {
+            $setting = $pd->getPublisherSetting();
+            if ($setting->getFieldsGroup() === 'activation') {
+                $publisherDescriptions[$setting->getName()] = $pd->getValue();
+            }
+        }
+
+        return [
+            'id' => $this->getId(),
+            'type' => $this->getType(),
+            'name' => $this->getName(),
+            'publisherDescriptions' => $publisherDescriptions
+        ];
+    }
+
     /**
      * @return array
      */
-    public function getAsArray(): array
+    public function getAsArrayClient(): array
     {
 
         return [

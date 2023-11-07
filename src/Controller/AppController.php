@@ -4,16 +4,20 @@ namespace App\Controller;
 
 use App\Entity\IconImage;
 use App\Entity\Location;
+use App\Entity\Notice;
 use App\Entity\Publisher;
 use App\Entity\PublisherDescription;
 use App\Entity\PublisherSetting;
+use App\Entity\User;
+use App\Entity\UserApi;
 use App\Entity\UserLocation;
 use App\Form\LocationDataType;
 use App\Form\LocationType;
+use App\Form\PublisherDataType;
 use App\Form\PublisherType;
 use ErrorException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -21,13 +25,23 @@ use Symfony\Component\VarDumper\VarDumper;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use function Symfony\Component\DomCrawler\Test\Constraint\toString;
 
 //use Symfony\UX\Chartjs\Model\Chart;
 
 class AppController extends AbstractController
 {
-    public function index(Request $request, EntityManagerInterface $em, UserInterface $user, ChartBuilderInterface $chartBuilder): Response
+    /**
+     * @param EntityManagerInterface $em
+     * @param UserInterface $user
+     * @param ChartBuilderInterface $chartBuilder
+     * @return Response
+     */
+    public function index
+    (
+        EntityManagerInterface $em,
+        UserInterface $user,
+        ChartBuilderInterface $chartBuilder
+    ): Response
     {
 //        $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
 //        $chart->setData([
@@ -42,15 +56,20 @@ class AppController extends AbstractController
 //            ],
 //        ]);
         $locations = $em->getRepository(Location::class)->findUserLocations($user->getId());
-        $location = new Location();
-
-        $form = $this->createForm(LocationType::class, $location);
-        $formLocationData = $this->createForm(LocationDataType::class);
-
+        $plates = $em->getRepository(User::class)->fingUserPlates($user->getId());
+        $choicePlates = [];
+        foreach ($plates as $item) {
+            $choicePlates[] = ['id' => $item->getId(), 'name' => $item->getUsername()];
+        }
+        $iconImages = $em->getRepository(IconImage::class)->findAll();
+        $choiceIconImages = [];
+        foreach ($iconImages as $item) {
+            $choiceIconImages[] = ['id' => $item->getId(), 'name' => $item->getTitle()];
+        }
         return $this->render('app/index.html.twig', [
             'locations' => array_reverse($locations),
-            'form' => $form,
-            'formLocationData' => $formLocationData
+            'plates' => $choicePlates,
+            'icon_images' => $choiceIconImages
         ]);
     }
 
@@ -69,42 +88,106 @@ class AppController extends AbstractController
     ): Response
     {
         $location = new Location();
-        $form = $this->createForm(LocationType::class, $location);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $icon = $form->get('icon')->getData();
-            VarDumper::dump($form);
-            if ((!$icon && !$location->getIconImage()) || ($location->getIconImage() && $icon)) {
+        $userApi = $em->getRepository(UserApi::class)->findOneBy(['id' => $request->request->all()['location']['user_api']]);
+        $location->setName($request->request->all()['location']['name']);
+        if ($request->files->all()['location']['icon']) {
+            $icon = $request->files->all()['location']['icon'];
+            if (filesize($icon) > 512000) {
                 $this->addFlash('danger', 'Something went wrong!');
                 return $this->redirectToRoute('index');
             }
-            if ($icon) {
-                $originalFilename = pathinfo($icon->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $path = sprintf('/img/locations/%s/', $user->getId());
-                $newFilename = sprintf('%s-%s.%s', substr($safeFilename, 0, 150), uniqid(), $icon->guessExtension());
-                $filePath = sprintf('%s/public%s', $this->getParameter('kernel.project_dir'), $path);
-                $icon->move(
-                    $filePath,
-                    $newFilename
-                );
-                $location->setIcon(sprintf('%s%s', $path, $newFilename));
-            }
-            try {
-                $em->persist($location);
-                $em->flush();
-                $userLocation = new UserLocation();
-                $userLocation->setUser($user);
-                $userLocation->setLocation($location);
-                $em->persist($userLocation);
-                $em->flush();
-                $this->addFlash('success', 'Room was successful added!');
-            } catch (ErrorException) {
-                $this->addFlash('danger', 'Something went wrong!');
-            }
+            $originalFilename = pathinfo($icon->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeFilename = $slugger->slug($originalFilename);
+            $path = sprintf('/img/locations/%s/', $user->getId());
+            $newFilename = sprintf('%s-%s.%s', substr($safeFilename, 0, 150), uniqid(), $icon->guessExtension());
+            $filePath = sprintf('%s/public%s', $this->getParameter('kernel.project_dir'), $path);
+            $icon->move(
+                $filePath,
+                $newFilename
+            );
+            $location->setIcon(sprintf('%s%s', $path, $newFilename));
+            $location->setIconImage(null);
+        } else if ($request->request->all()['location']['icon_image']) {
+            $location->setIcon(null);
+            $location->setIconImage($em->getRepository(IconImage::class)->findOneBy(['id' => $request->request->all()['location']['icon_image']]));
+        } else {
+            $this->addFlash('danger', 'Set your own room image or choose our image');
+            return $this->redirectToRoute('index');
+        }
+        $userApi->addLocation($location);
+        $location->setUserApi($userApi);
+        try {
+            $em->persist($location);
+            $em->flush();
+            $userLocation = new UserLocation();
+            $userLocation->setUser($user);
+            $userLocation->setLocation($location);
+            $em->persist($userLocation);
+            $notice = new Notice(
+                [
+                    'location' => $location,
+                    'action' => 2,
+                    'text' => sprintf(
+                        'Location "%s" was added',
+                        $location->getName()
+                    ),
+                    'time' => (new \DateTime())->setTimestamp(time())
+                ]
+            );
+            $em->persist($notice);
+            $em->flush();
+            $this->addFlash('success', 'Room was successful added!');
+        } catch (ErrorException) {
+            $this->addFlash('danger', 'Something went wrong!');
         }
 
         return $this->redirectToRoute('index');
+    }
+
+    public function editLocation
+    (
+        Location $location,
+        EntityManagerInterface $em,
+        UserInterface $user
+    ): Response
+    {
+        $data = [];
+        $data['id'] = $location->getId();
+        $data['devices'] = [];
+        $data['sensors'] = [];
+        if (!$em->getRepository(Location::class)->findUserLocation($data['id'], $user->getId())) {
+            $this->addFlash('danger', 'You have not access to that room!');
+
+            return $this->redirectToRoute('index');
+        }
+        $data['name'] = $location->getName();
+        $publisher = $em->getRepository(Location::class)->getLocationPublishers($location->getId());
+        foreach ($publisher as $item) {
+            if ($item->getType() == 1) {
+                $data['devices'][] = $item->getAsArrayClient();
+            } else {
+                $data['sensors'][] = $item->getAsArrayClient();
+            }
+        }
+        $plates = $em->getRepository(User::class)->fingUserPlates($user->getId());
+        $choicePlates = [];
+        $selectedPlate = $location->getUserApi();
+        foreach ($plates as $item) {
+            $choicePlates[] = ['id' => $item->getId(), 'name' => $item->getUsername(), 'selected' => ($item === $selectedPlate)];
+        }
+        $data['plates'] = $choicePlates;
+        $iconImages = $em->getRepository(IconImage::class)->findAll();
+        $choiceIconImages = [];
+        $selectedIconImage = $location->getIconImage();
+        foreach ($iconImages as $item) {
+            $choiceIconImages[] = ['id' => $item->getId(), 'name' => $item->getTitle(), 'selected' => ($item === $selectedIconImage)];
+        }
+        $data['icon_images'] = $choiceIconImages;
+
+        return $this->render(
+            'app/edit_location.html.twig',
+            $data
+        );
     }
 
     /**
@@ -122,56 +205,106 @@ class AppController extends AbstractController
         UserInterface $user
     ): Response
     {
-        $data = $request->request->all()['location_data'];
-        $locationId = $data['id'];
-//        VarDumper::dump($locationId);
+        $locationId = $request->request->all()['location_data']['id'];
         $location = $em->getRepository(Location::class)->findUserLocation($locationId, $user->getId());
-//        VarDumper::dump($location);
-        $form = $this->createForm(LocationDataType::class, $location);
-        $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $icon = $form->get('icon')->getData();
-            $iconImage = $form->get('icon_image')->getData();
-//            VarDumper::dump($form);
-            if ((!$icon && !$location->getIconImage()) || ($location->getIconImage() && $icon)) {
+        $userApi = $em->getRepository(UserApi::class)->findOneBy(['id' => $request->request->all()['location_data']['user_api']]);
+        $location->setName($request->request->all()['location_data']['name']);
+        if ($request->files->all()['location_data']['icon']) {
+            $icon = $request->files->all()['location_data']['icon'];
+            if (filesize($icon) > 512000) {
                 $this->addFlash('danger', 'Something went wrong!');
-
                 return $this->redirectToRoute('index');
             }
-            if ($icon) {
-                $originalFilename = pathinfo($icon->getClientOriginalName(), PATHINFO_FILENAME);
-                $safeFilename = $slugger->slug($originalFilename);
-                $path = sprintf('/img/locations/%s/', $user->getId());
-                $newFilename = sprintf('%s-%s.%s', substr($safeFilename, 0, 150), uniqid(), $icon->guessExtension());
-                $filePath = sprintf('%s/public%s', $this->getParameter('kernel.project_dir'), $path);
-                $icon->move(
-                    $filePath,
-                    $newFilename
-                );
-                $location->setIcon(sprintf('%s%s', $path, $newFilename));
-            }
-            elseif ($iconImage) {
-                $location->setIconImage($em->getRepository(IconImage::class)->findOneBy(['id' => $iconImage->getId()]));
-                if ($location->getIcon()) {
-                    $location->setIcon(null);
-                }
-            }
-            try {
-                $em->persist($location);
-                $em->flush();
-                $this->addFlash('success', 'Room was successful edited!');
-            } catch (ErrorException) {
-                $this->addFlash('danger', 'Something went wrong!2');
-            }
+            $originalFilename = pathinfo($icon->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeFilename = $slugger->slug($originalFilename);
+            $path = sprintf('/img/locations/%s/', $user->getId());
+            $newFilename = sprintf('%s-%s.%s', substr($safeFilename, 0, 150), uniqid(), $icon->guessExtension());
+            $filePath = sprintf('%s/public%s', $this->getParameter('kernel.project_dir'), $path);
+            $icon->move(
+                $filePath,
+                $newFilename
+            );
+            $location->setIcon(sprintf('%s%s', $path, $newFilename));
+            $location->setIconImage(null);
+        } else if ($request->request->all()['location_data']['icon_image']) {
+            $location->setIcon(null);
+            $location->setIconImage($em->getRepository(IconImage::class)->findOneBy(['id' => $request->request->all()['location_data']['icon_image']]));
+        } else {
+            $this->addFlash('danger', 'Set your own room image or choose our image');
+            return $this->redirectToRoute('index');
+        }
+        $userApi->addLocation($location);
+        $location->setUserApi($userApi);
+        try {
+            $em->persist($location);
+            $em->flush();
+            $this->addFlash('success', 'Room was successful edited!');
+        } catch (ErrorException) {
+            $this->addFlash('danger', 'Something went wrong!');
         }
 
         return $this->redirectToRoute('index');
     }
 
+    /**
+     * @param Location $location
+     * @param Request $request
+     * @param EntityManagerInterface $em
+     * @param UserInterface $user
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function deleteLocation
+    (
+        Location $location,
+        Request $request,
+        EntityManagerInterface $em,
+        UserInterface $user
+    )
+    {
+        if (!$em->getRepository(Location::class)->findUserLocation($location->getId(), $user->getId())) {
+            $this->addFlash('danger', 'You have not access to that room!');
+
+            return $this->redirectToRoute('index');
+        }
+        try {
+            $name = $location->getName();
+            $em->remove($location);
+            $em->flush();
+            $this->addFlash('success', sprintf('Room "%s" was deleted', $name));
+        } catch (ErrorException) {
+            $this->addFlash('danger', 'Something went wrong!');
+        }
+
+
+        return $this->redirectToRoute('index');
+    }
+
+    /**
+     * @return Response
+     */
     public function dashboard()
     {
 
         return $this->render('app/dashboard.html.twig');
+    }
+
+    /**
+     * @param EntityManagerInterface $em
+     * @param UserInterface $user
+     * @return Response
+     */
+    public function notices
+    (
+        EntityManagerInterface $em,
+        UserInterface $user
+    ): Response
+    {
+        $notices = $em->getRepository(Notice::class)->findUserNotices($user->getId());
+//        VarDumper::dump($notices);
+        return $this->render('app/notices.html.twig', [
+            'notices' => array_reverse($notices)
+        ]);
     }
 
     /**
@@ -200,17 +333,22 @@ class AppController extends AbstractController
      */
     public function getLocation
     (
-        Location $location
+        Location $location,
+        EntityManagerInterface $em
     )
     {
         $data = [
             'id' => $location->getId(),
             'name' => $location->getName()
         ];
+
+        foreach ($em->getRepository(IconImage::class)->findAll() as $item) {
+            $data['iconImages'][$item->getTitle()] = $item->getId();
+        }
         if ($location->getIconImage()) {
             $data['iconImage'] = $location->getIconImage()->getId();
         }
-
+        $data['UserApi'][$location->getUserApi()->getUsername()] = $location->getUserApi()->getId();
         return $this->json($data);
     }
 
@@ -246,9 +384,9 @@ class AppController extends AbstractController
         $publisher = $em->getRepository(Location::class)->findUserPublishers($location->getId(), $user->getId());
         foreach ($publisher as $item) {
             if ($item->getType() == 1) {
-                $response['data']['devices'][] = $item->getAsArray();
+                $response['data']['devices'][] = $item->getAsArrayClient();
             } else {
-                $response['data']['sensors'][] = $item->getAsArray();
+                $response['data']['sensors'][] = $item->getAsArrayClient();
             }
         }
 
@@ -283,23 +421,123 @@ class AppController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             try {
                 $em->persist($publisher);
+                $notice = new Notice(
+                    [
+                        'location' => $location,
+                        'action' => 2,
+                        'text' => sprintf(
+                            'Publisher "%s" was added to the "%s"',
+                            $publisher->getName(),
+                            $location->getName()
+                        ),
+                        'time' => (new \DateTime())->setTimestamp(time())
+                    ]
+                );
+                $em->persist($notice);
                 $em->flush();
                 $this->addFlash('success', 'Publisher was successful added!');
             } catch (ErrorException) {
                 $this->addFlash('danger', 'Something went wrong!');
             }
-
         }
-
-        # redirect to room !!!!!
 
         return $this->redirectToRoute('app_location', [
             '_fragment' => $locationId
         ]);
     }
 
+    /**
+     * @param Publisher $publisher
+     * @param EntityManagerInterface $em
+     * @param UserInterface $user
+     * @param Request $request
+     * @return Response
+     */
+    public function editPublisher
+    (
+        Publisher $publisher,
+        EntityManagerInterface $em,
+        UserInterface $user,
+        Request $request
+    ): Response
+    {
+        if (!$em->getRepository(Publisher::class)->findUserPublisher($user->getId(), $publisher->getId())) {
+            $this->addFlash('danger', 'You have not access to that publisher!');
+
+            return $this->redirectToRoute('index');
+        }
+        $form = $this->createForm(PublisherDataType::class, $publisher);
+        $data = [];
+        $data['form'] = $form;
+        $type = $publisher->getType();
+        $form->handleRequest($request);
+        $publisher->setType($type);
+        $data['name'] = $publisher->getName();
+        $data['id'] = $publisher->getId();
+        $data['type'] = $publisher->getType();
+        if ($form->isSubmitted() && $form->isValid()) {
+            try {
+                $em->persist($publisher);
+                $em->flush();
+                $this->addFlash('success', 'Publisher was successful edited!');
+            } catch (ErrorException) {
+                $this->addFlash('danger', 'Something went wrong!');
+            }
+        }
+
+        return $this->render('app/edit_publisher.html.twig', $data);
+    }
+
+    /**
+     * @param Publisher $publisher
+     * @param EntityManagerInterface $em
+     * @param UserInterface $user
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function deletePublisher
+    (
+        Publisher $publisher,
+        EntityManagerInterface $em,
+        UserInterface $user
+    )
+    {
+        if (!in_array($publisher, $em->getRepository(Location::class)->findUserPublishers($publisher->getLocation()->getId(), $user->getId()))) {
+            $this->addFlash('danger', 'You have not access to that publisher!');
+
+            return $this->redirectToRoute('index');
+        }
+        try {
+            $name = $publisher->getName();
+            $location = $publisher->getLocation();
+            $em->remove($publisher);
+            $notice = new Notice(
+                [
+                    'location' => $location,
+                    'action' => 3,
+                    'text' => sprintf(
+                        'Publisher "%s" was removed from the "%s"',
+                        $publisher->getName(),
+                        $location->getName()
+                    ),
+                    'time' => (new \DateTime())->setTimestamp(time())
+                ]
+            );
+            $em->persist($notice);
+            $em->flush();
+            $this->addFlash('success', sprintf('Publisher "%s" was deleted', $name));
+        } catch (ErrorException) {
+            $this->addFlash('danger', 'Something went wrong!');
+        }
+
+        return $this->redirectToRoute('index');
+    }
+
+    /**
+     * @return Response
+     */
     public function arduinoImitation(): Response
     {
+
         return $this->render('trash.html.twig');
     }
 }

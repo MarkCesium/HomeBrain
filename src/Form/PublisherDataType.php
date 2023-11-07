@@ -3,7 +3,6 @@
 namespace App\Form;
 
 use App\Entity\Publisher;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -12,12 +11,14 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class PublisherType extends AbstractType
+class PublisherDataType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('type', ChoiceType::class, [
+                'required' => false,
+                'mapped' => true,
                 'choices' => [
                     'Device' => 1,
                     'Sensor' => 2,
@@ -49,7 +50,8 @@ class PublisherType extends AbstractType
                 'allow_add' => true,
                 'by_reference' => false,
                 'allow_delete' => true
-            ]);
+            ])
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
