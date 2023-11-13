@@ -4,17 +4,17 @@
 
 {% block body %}
     <div class="container-sm">
-        <div class="text-center">
+        <div class="text-center mt-5">
             <img src="{{ asset('img/svg/logo.svg') }}" alt="brand-logo" class="brand-logo my-3">
         </div>
         <form action="{{ path('app_login_check') }}" class="auth-form" method="post">
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
             <div class="mb-3">
-                <label for="exampleInputEmail1" class="form-label my-white b1">Email address</label>
+                <label for="exampleInputEmail1" class="my-white b1 mb-2">Email address</label>
                 <input type="email" class="form-control" id="exampleInputEmail1" name="_username">
             </div>
             <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label my-white b1">Password</label>
+                <label for="exampleInputPassword1" class="my-white b1 mb-2">Password</label>
                 <input type="password" class="form-control" id="exampleInputPassword1" name="_password">
             </div>
             <button type="submit" class="mb-3 b3">Sign In</button>

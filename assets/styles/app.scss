@@ -152,7 +152,7 @@ h3 {
   display: flex;
   padding: 0 4px;
   height: 30px;
-  width: available;
+  width: 180px;
   border: 2px solid #6E9EF9;
   border-radius: 10px;
   color: #232323;
@@ -178,6 +178,10 @@ h3 {
 .btn-device-input:hover {
   color: #EBEBEB;
   background: #6E9EF9;
+}
+
+.switch-block {
+  height: 30px;
 }
 
 .sensor-card {

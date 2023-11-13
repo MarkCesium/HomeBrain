@@ -87,17 +87,20 @@
                 {% for location in locations %}
                     <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center my-3">
                         <div class="room-card p-2 d-inline text-center">
-                            <img class="room-icon"
-                                 src="{{ location.icon is not empty ? location.icon : location.iconImage.img }}"
-                                 alt="nothing">
-                            <h3 class="room-name mx-auto d-flex justify-content-center">
-                                <a class="vasilek text-decoration-none me-1"
-                                   href="{{ path('app_location') }}#{{ location.id }}">{{ location.name }}
-                                </a>
-                                <a href="{{ path('app_edit_location', {'location': location.id}) }}"><img class="ms-1"
-                                                                                                          src="{{ asset('img/svg/edit.svg') }}"
-                                                                                                          alt="edit"></a>
-                            </h3>
+                            <a class="vasilek text-decoration-none me-1"
+                               href="{{ path('app_location') }}#{{ location.id }}">
+                                <img class="room-icon"
+                                     src="{{ location.icon is not empty ? location.icon : location.iconImage.img }}"
+                                     alt="nothing">
+                                <h3 class="room-name mx-auto d-flex justify-content-center">
+                                    {{ location.name }}
+
+                                    <a href="{{ path('app_edit_location', {'location': location.id}) }}"><img
+                                                class="ms-1"
+                                                src="{{ asset('img/svg/edit.svg') }}"
+                                                alt="edit"></a>
+                                </h3>
+                            </a>
                         </div>
                     </div>
                 {% endfor %}

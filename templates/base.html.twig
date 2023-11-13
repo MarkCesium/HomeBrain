@@ -17,7 +17,8 @@
     <a class="navbar-brand text-color text-responsive" href="#">
         <h3 class="response text-color">HomeBrain</h3>
     </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -33,12 +34,14 @@
                 <a id="nav-notice" class="nav-link b1" href="{{ path('app_notices') }}">Notices</a>
             </li>
         </ul>
-        <a href="#" class="nav-link mx-2 px-0">
-            <div class="user my-lg-0 d-flex align-items-center text-color">
-                <h3 class="me-2 text-color"><a id="user-link" class="text-decoration-none text-color" href="{{ path('user_account') }}">{{ app.user.username }}</a></h3>
-                <img src="{{ app.user.avatar is not empty ? asset(app.user.avatar) : asset('img/avatars/default_avatar.png') }}" alt="user-avatar" class="user-avatar my-1">
-            </div>
-        </a>
+        <div class="user my-lg-0 d-flex align-items-center text-color">
+            <a id="user-link" class="text-decoration-none text-color d-flex align-items-center"
+               href="{{ path('user_account') }}">
+                <h3 class="me-2 text-color" id="username">{{ app.user.username }}</h3>
+                <img src="{{ app.user.avatar is not empty ? asset(app.user.avatar) : asset('img/avatars/default_avatar.png') }}"
+                     alt="user-avatar" class="user-avatar my-1">
+            </a>
+        </div>
 
     </div>
 </nav>

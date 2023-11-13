@@ -10,7 +10,7 @@
         <div class="notices container">
             <ul class="list-group list-group-flush">
                 {% for notice in notices %}
-                    <li class="list-group-item notice-item d-flex">
+                    <li class="list-group-item notice-item d-flex mb-3">
                         {% if notice.action == 1 %}
                             <img class="notice-icon" src="{{ asset('img/svg/notices/warning.svg') }}" alt="warning">
                         {% elseif notice.action == 2 %}

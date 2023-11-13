@@ -47,49 +47,21 @@
             <h1 class="vasilek text-center my-2" data-bind="text: name"></h1>
         </div>
         <div class="row">
-            <div class="my-2 col-12 col-sm-12 col-md-9 col-lg-9">
+            <div class="my-2 col-12 col-sm-12 col-md-3 col-lg-3 order-md-last">
+                <section class="m-0 row rooms-widget text-center d-flex justify-content-center">
+                    <h2 class="my-1 col-12 vasilek">Rooms</h2>
+                    <div class="my-1 col-12 list-group rooms-list p-0">
+                        {% for location in locations %}
+                            <a href="#{{ location.id }}"
+                               class="list-group-item list-group-item-action b2 text-color bg-vasilek-dis"
+                               data-bind="click: changeRoom"
+                               data-location="{{ location.id }}">{{ location.name }}</a>
+                        {% endfor %}
+                    </div>
+                </section>
+            </div>
+            <div class="my-2 col-12 col-sm-12 col-md-9 col-lg-9 order-md-first">
                 <div class="mt-0 mb-2 px-2 row">
-                    <h2 class="text-center vasilek">Devices</h2>
-                    <div class="row mx-0 my-1 px-sm-1 px-md-2 p-0">
-                        <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
-                            <div class="add-text b1 vasilek d-flex justify-content-start">
-                                <a href="#add_publisher"
-                                   class="vasilek text-decoration-none d-flex justify-content-center"
-                                   data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-title="device"
-                                   data-bs-type="1">
-                                    <img src="{{ asset('img/svg/plus.svg') }}" alt="add" class="me-1">Add device
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row mx-0 my-1 px-sm-1 px-md-2 p-0" data-bind="foreach: devices">
-                        <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
-                            <div class="device-card d-flex">
-                                <div class="my-auto">
-                                    <h3 class="b2 text-center w-100" data-bind="text: name"></h3>
-                                    <form class="device-form" data-bind="attr: {data: id}">
-                                        <!-- ko if: responseType=='int' || responseType=='float' -->
-                                        <input type="text" class="device-input d-flex my-2"
-                                               placeholder="Enter value to device">
-                                        <!-- /ko -->
-                                        <!-- ko if: responseType=='bool' -->
-                                        <div class="d-flex my-2 justify-content-start">
-                                            <h3 class="b3 me-2">Off/On</h3>
-                                            <div class="form-check form-switch ms-auto">
-                                                <input class="form-check-input" type="checkbox" role="switch">
-                                            </div>
-                                        </div>
-                                        <!-- /ko -->
-                                        <button class="btn-device-input text-center b3 my-2" type="submit"
-                                                onclick="sendDevice()">Send
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="my-2 px-2 row">
                     <h2 class="text-center vasilek">Sensors</h2>
                     <div class="row mx-0 my-2 px-sm-1 px-md-2 p-0">
                         <div class="m-0 p-0 col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
@@ -115,19 +87,47 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="my-2 col-12 col-sm-12 col-md-3 col-lg-3">
-                <section class="m-0 row rooms-widget text-center d-flex justify-content-center">
-                    <h2 class="my-1 col-12 vasilek">Rooms</h2>
-                    <div class="my-1 col-12 list-group rooms-list p-0">
-                        {% for location in locations %}
-                            <a href="#{{ location.id }}"
-                               class="list-group-item list-group-item-action b2 text-color bg-vasilek-dis"
-                               data-bind="click: changeRoom"
-                               data-location="{{ location.id }}">{{ location.name }}</a>
-                        {% endfor %}
+                <div class="my-2 px-2 row">
+                    <h2 class="text-center vasilek">Devices</h2>
+                    <div class="row mx-0 my-1 px-sm-1 px-md-2 p-0">
+                        <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
+                            <div class="add-text b1 vasilek d-flex justify-content-start">
+                                <a href="#add_publisher"
+                                   class="vasilek text-decoration-none d-flex justify-content-center"
+                                   data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-title="device"
+                                   data-bs-type="1">
+                                    <img src="{{ asset('img/svg/plus.svg') }}" alt="add" class="me-1">Add device
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                </section>
+                    <div class="row mx-0 my-1 px-sm-1 px-md-2 p-0" data-bind="foreach: devices">
+                        <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
+                            <div class="device-card d-flex">
+                                <div class="my-auto">
+                                    <h3 class="b2 text-center w-100 py-1" data-bind="text: name"></h3>
+                                    <form class="device-form text-center mt-2" data-bind="attr: {data: id}">
+                                        <!-- ko if: responseType=='int' || responseType=='float' -->
+                                        <input type="text" class="device-input my-2 mx-auto"
+                                               placeholder="Enter value to device">
+                                        <!-- /ko -->
+                                        <!-- ko if: responseType=='bool' -->
+                                        <div class="d-flex my-2 justify-content-center switch-block pt-1">
+                                            <h3 class="b3 me-2 d-flex justify-content-center">Off/On</h3>
+                                            <div class="form-check form-switch d-flex justify-content-center">
+                                                <input class="form-check-input" type="checkbox" role="switch">
+                                            </div>
+                                        </div>
+                                        <!-- /ko -->
+                                        <button class="btn-add-room text-center b2 b3 my-2" type="submit"
+                                                onclick="sendDevice()">Send
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -180,6 +180,7 @@
         ko.applyBindings(viewModel);
 
         window.addEventListener("DOMContentLoaded", function () {
+            interval = setInterval(() => sendData(socketSensor, location), 1000);
             let location = window.location.hash.slice(1);
             if (location === '') {
                 window.location.href = '/';
@@ -244,10 +245,6 @@
                 collectionHolder.dataset.index++;
             }
 
-            socketSensor.addEventListener("open", function () {
-                console.log("CONNECTED");
-                interval = setInterval(() => sendData(socketSensor, location), 1000);
-            });
             socketSensor.addEventListener('message', function (msg) {
                 const dataRaw = JSON.parse(msg.data);
                 let data = dataRaw.map(item => {

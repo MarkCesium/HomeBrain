@@ -25,6 +25,7 @@ use Symfony\Component\VarDumper\VarDumper;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\UX\Chartjs\Model\Chart;
 
 //use Symfony\UX\Chartjs\Model\Chart;
 
@@ -43,18 +44,6 @@ class AppController extends AbstractController
         ChartBuilderInterface $chartBuilder
     ): Response
     {
-//        $chart = $chartBuilder->createChart(Chart::TYPE_LINE);
-//        $chart->setData([
-//            'labels' => ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-//            'datasets' => [
-//                [
-//                    'label' => 'Random!',
-//                    'backgroundColor' => '#6E9EF9',
-//                    'borderColor' => '#6E9EF9',
-//                    'data' => [522, 1500, 2250, 2197, 2345, 3122, 3099],
-//                ],
-//            ],
-//        ]);
         $locations = $em->getRepository(Location::class)->findUserLocations($user->getId());
         $plates = $em->getRepository(User::class)->fingUserPlates($user->getId());
         $choicePlates = [];
@@ -144,6 +133,13 @@ class AppController extends AbstractController
         return $this->redirectToRoute('index');
     }
 
+    /**
+     * @param Location $location
+     * @param EntityManagerInterface $em
+     * @param UserInterface $user
+     * @return Response
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
     public function editLocation
     (
         Location $location,
@@ -281,12 +277,46 @@ class AppController extends AbstractController
     }
 
     /**
+     * @param EntityManagerInterface $em
+     * @param UserInterface $user
      * @return Response
      */
-    public function dashboard()
+    public function dashboard
+    (
+        EntityManagerInterface $em,
+        UserInterface $user
+    ): Response
     {
+        $locationsData = [];
+        $locations = $em->getRepository(Location::class)->findUserLocations($user->getId());
+        foreach ($locations as $location) {
+            $locationData = [
+                'name' => $location->getName(),
+                'chartDatas' => []
+            ];
+            $publishers = $em->getRepository(Location::class)->getLocationPublishers($location->getid());
+            if ($publishers) {
+                foreach ($publishers as $publisher) {
+                    if ($publisher->getResponseType() === 'bool' || $publisher->getType() === 1) {
+                        continue;
+                    }
+                    $locationData['chartDatas'][] = [
+                        'name' => $publisher->getName(),
+                        'id' => sprintf('chart_%s', $publisher->getId()),
+                        'data' => [
+                            'min' => 20,
+                            'max' => 40
+                        ]
+                    ];
+                }
+            }
 
-        return $this->render('app/dashboard.html.twig');
+            $locationsData[] = $locationData;
+        }
+
+        return $this->render('app/dashboard.html.twig', [
+            'locationsData' => array_reverse($locationsData)
+        ]);
     }
 
     /**
@@ -301,7 +331,6 @@ class AppController extends AbstractController
     ): Response
     {
         $notices = $em->getRepository(Notice::class)->findUserNotices($user->getId());
-//        VarDumper::dump($notices);
         return $this->render('app/notices.html.twig', [
             'notices' => array_reverse($notices)
         ]);

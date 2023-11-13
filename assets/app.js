@@ -11,6 +11,9 @@ import './styles/app.scss';
 require('bootstrap');
 
 const $ = require('jquery');
+require('chart.js');
+// window.chart = chart;
+// global.chart = chart;
 window.$ = $;
 global.$ = global.jQuery = $;
 require('@popperjs/core');

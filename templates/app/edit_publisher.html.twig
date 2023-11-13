@@ -30,8 +30,6 @@
                  data-index="{{ form.publisherDescriptions|length > 0 ? form.publisherDescriptions|last.vars.name + 1 : 0 }}"
                  data-prototype="{{ form_widget(form.publisherDescriptions.vars.prototype)|e('html_attr') }}"
             ></div>
-
-            <div id="descriptionForm"></div>
             {{ form_end(form) }}
             <div class="px-2 d-flex mb-3">
                 <button id="delete-location" class="btn-delete-room text-center b2 ms-1 me-auto"
@@ -51,7 +49,6 @@
     <script>
         window.addEventListener('DOMContentLoaded', function () {
             $('#publisher_data_publisherDescriptions fieldset').each((index, element) => {
-                console.log(element);
                 let btn = document.createElement("button");
                 btn.setAttribute('class', 'btn-delete-room text-center b2 me-auto');
                 btn.setAttribute('id', 'delete-setting');
@@ -69,9 +66,7 @@
 
             function addFormToCollection(e) {
                 const collectionHolder = document.querySelector('.publisherDescriptions');
-
                 const item = document.createElement('div');
-                console.log(collectionHolder)
                 item.innerHTML = collectionHolder
                     .dataset
                     .prototype
@@ -79,9 +74,13 @@
                         /__name__/g,
                         collectionHolder.dataset.index
                     );
-
+                let btn = document.createElement("button");
+                btn.setAttribute('class', 'btn-delete-room text-center b2 me-auto');
+                btn.setAttribute('id', 'delete-setting');
+                btn.setAttribute('onclick', 'deleteSetting(this)');
+                btn.innerHTML = 'Delete setting';
                 collectionHolder.appendChild(item);
-
+                collectionHolder.appendChild(btn);
                 collectionHolder.dataset.index++;
             }
         })

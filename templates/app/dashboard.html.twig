@@ -3,15 +3,99 @@
 {% block body %}
     <div class="container-fluid">
         <h1 class="text-center my-2 vasilek">Dashboard</h1>
+        <div class="row d-flex justify-content-center">
+            {% for locationData in locationsData %}
+                <div class="row mb-3">
+                    <h2 class="text-center vasilek">{{ locationData.name }}</h2>
+                    {% if locationData.chartDatas is empty %}
+                        <h3 class="text-center text-color my-3">No data</h3>
+                    {% else %}
+                        {% for item in locationData.chartDatas %}
+                            <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6 my-3 d-flex justify-content-center">
+                                <canvas class="chart" id="{{ item.id }}"></canvas>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
     </div>
 {% endblock %}
 {% block javascripts %}
 
     {{ parent() }}
+    <!-- Chart.js include -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        const chartsData = [
+            {% for locationData in locationsData %}
+            {% if locationData.chartDatas is not empty %}
+            {% for chartData in locationData.chartDatas %}
+{
+                'label': "{{ chartData.name }}",
+                'id': `{{ chartData.id }}`,
+                'data': {
+                    'minData': {{ chartData.data.min }},
+                    'maxData': {{ chartData.data.max }}
+                }
+            },
+            {% endfor %}
+            {% endif %}
+            {% endfor %}
+        ];
+
+        const getRandomData = (count, min, max) => {
+            let data = [];
+            for (let i = count; i >= 0; i--) {
+                data.push(Math.floor(Math.random() * (max - min) + min));
+            }
+
+            return data;
+        };
+
+        const getTime = () => {
+            let date = new Date;
+            let now = date.getHours();
+            let time = [];
+            for (let i = 7; i >= 0; i--) {
+                time.push((now - i < 10 ? "0" : "") + (date.getHours() - i) + ":00");
+            }
+
+            return time;
+        }
+
+        const createChart = (ctx, label, dataValue) => {
+            let data = {
+                labels: getTime(),
+                datasets: [{
+                    label: label,
+                    data: getRandomData(7, dataValue.minData, dataValue.maxData),
+                    borderWidth: 2,
+                    fill: true,
+                    borderColor: 'rgba(110, 158, 249, 1)',
+                    backgroundColor: 'rgba(110, 158, 249, 0.25)'
+                }]
+            };
+
+            let config = {
+                type: 'line',
+                data
+            };
+
+            let newChart = new Chart(ctx, config);
+        }
+
         window.addEventListener("DOMContentLoaded", () => {
                 $('#nav-dash').addClass('my-white');
+                chartsData.map(value => {
+                    createChart(
+                        ctx=$(`#${value.id}`),
+                        label=value.label,
+                        dataValue=value.data
+                    )
+                })
             }
         );
+
     </script>
 {% endblock %}

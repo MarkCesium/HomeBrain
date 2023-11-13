@@ -22,14 +22,14 @@ class LocationRepository extends ServiceEntityRepository
         parent::__construct($registry, Location::class);
     }
 
-    public function findUserLocations(int $id)
+    public function findUserLocations(int $userId)
     {
         $query = $this->getEntityManager()->createQueryBuilder()
             ->select('l')
             ->from(Location::class, 'l')
             ->leftJoin('l.userLocations', 'ul', 'l.userLocations=ul.location')
-            ->where('ul.user = :id')
-            ->setParameter('id', $id)
+            ->where('ul.user = :userId')
+            ->setParameter('userId', $userId)
             ->orderBy('l.id', 'DESC')
             ->getQuery();
 
