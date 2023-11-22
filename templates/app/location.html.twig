@@ -147,7 +147,7 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        const socketSensor = new WebSocket("ws://homebrain:3001");
+        const socket = new WebSocket("ws://localhost:3001");
         let interval;
         let viewFunctions = {
             changeRoom: function (data, event) {

@@ -31,7 +31,7 @@ class ArchieveSensorDataCommand extends Command
 
         $this->em = $em;
         $this->redis = new Redis();
-        $this->redis->connect('localhost', 6379);
+        $this->redis->connect("redis");
     }
 
     protected function configure(): void

@@ -1,0 +1,1 @@
+Acquire::http::Proxy "http://login:pass@host:port";
