@@ -3,12 +3,8 @@
 
 namespace App\Websockets;
 
-use App\Entity\Location;
-use App\Entity\Publisher;
 use App\Entity\PublisherDescription;
-use App\Repository\PublisherRepository;
 use App\Services\Validator;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Ratchet\ConnectionInterface;
@@ -17,7 +13,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Serializer\Serializer;
 use Ratchet\MessageComponentInterface;
 use SplObjectStorage;
-use Symfony\Component\VarDumper\VarDumper;
 
 class SensorUploadMessageHandler implements MessageComponentInterface
 {
@@ -35,7 +30,7 @@ class SensorUploadMessageHandler implements MessageComponentInterface
     {
         $this->connections = new SplObjectStorage;
         $this->redis = new Redis();
-        $this->redis->connect('localhost', 6379);
+        $this->redis->connect("redis");
         $this->serializer = new Serializer();
         $this->em = $em;
         $this->output = $output;

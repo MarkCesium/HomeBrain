@@ -31,7 +31,7 @@ class SensorMessageHandler implements MessageComponentInterface
     {
         $this->connections = new SplObjectStorage;
         $this->redis = new Redis();
-        $this->redis->connect('localhost', 6379);
+        $this->redis->connect('redis');
         $this->serializer = new Serializer();
         $this->em = $em;
         $this->output = $output;
@@ -49,6 +49,7 @@ class SensorMessageHandler implements MessageComponentInterface
     )
     {
         $locationId = intval(json_decode($msg));
+        VarDumper::dump($msg);
         $publishers = $this->em->getRepository(Location::class)->getLocationPublishers($locationId);
         $publishersId = [];
         foreach ($publishers as $item) {

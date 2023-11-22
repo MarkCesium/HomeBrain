@@ -1,0 +1,80 @@
+version: '3.4'
+services:
+  homebrain-php:
+    build:
+      context: ./images/php
+      args:
+        build_env: dev
+    depends_on:
+      - homebrain-mysql
+      - homebrain-redis
+    networks:
+      - homebrain-network
+    links:
+      - homebrain-mysql
+      - 'homebrain-redis:redis'
+    ports:
+      - '809:80'
+      - '3001:3001'
+      - '3003:3003'
+    volumes:
+      - './:/var/www/html'
+      - './var:/var/www/html/var'
+      - './images/php/log/apache2:/var/log/apache2/'
+    env_file: .env
+    environment:
+      - DB_HOST=homebrain-mysql
+      - TZ=Europe/Minsk
+    working_dir: /var/www/html
+    restart: always
+    container_name: homebrain-php
+  homebrain-mysql:
+    image: 'mysql:5.7'
+    command:
+      - '--default-authentication-plugin=mysql_native_password'
+    networks:
+      - homebrain-network
+    ports:
+      - '3338:3306'
+    environment:
+      MYSQL_HOST: ${MYSQL_USER}'@'${MYSQL_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DB: ${MYSQL_DB}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      TZ: Europe/Minsk
+    volumes:
+      - './var/db:/var/lib/mysql'
+    container_name: homebrain-mysql
+    restart: always
+  homebrain-redis:
+    image: 'redis:7.0-alpine'
+    volumes:
+      - '/var/redis:/data'
+    ports:
+      - '8097:6379'
+      - '6379:6379'
+    networks:
+      - homebrain-network
+    container_name: homebrain-redis
+  homebrain-phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    networks:
+      - homebrain-network
+    ports:
+      - '8762:80'
+    depends_on:
+      - homebrain-mysql
+    container_name: homebrain-phpmyadmin
+    links:
+      - 'homebrain-mysql:mysql'
+    environment:
+      PMA_HOST: homebrain-mysql
+      MYSQL_DB: ${MYSQL_DB}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: Europe/Minsk
+    restart: always
+
+networks:
+  homebrain-network: null

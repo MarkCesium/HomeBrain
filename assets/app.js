@@ -14,8 +14,6 @@ const $ = require('jquery');
 window.$ = $;
 global.$ = global.jQuery = $;
 require('@popperjs/core');
-window.ko = ko;
-global.ko = ko;
 
 // or you can include specific pieces
 require('bootstrap/js/dist/tooltip');
