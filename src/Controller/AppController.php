@@ -6,28 +6,19 @@ use App\Entity\IconImage;
 use App\Entity\Location;
 use App\Entity\Notice;
 use App\Entity\Publisher;
-use App\Entity\PublisherDescription;
-use App\Entity\PublisherSetting;
 use App\Entity\User;
 use App\Entity\UserApi;
 use App\Entity\UserLocation;
-use App\Form\LocationDataType;
-use App\Form\LocationType;
 use App\Form\PublisherDataType;
 use App\Form\PublisherType;
 use ErrorException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\VarDumper\VarDumper;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\UX\Chartjs\Model\Chart;
-
-//use Symfony\UX\Chartjs\Model\Chart;
 
 class AppController extends AbstractController
 {

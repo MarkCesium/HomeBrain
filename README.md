@@ -99,3 +99,17 @@ GET http://homebrain2/api/api-hello
   "msg": "Hello, World!"
 }
 ```
+
+## Create docker compose
+
+```
+    docker-compose up -d --no-deps --build
+```
+
+## Open container bash
+
+```
+docker exec -it homebrain-php bash
+```
+
+NOTE: open PHA and create DB, add DB user permission 
