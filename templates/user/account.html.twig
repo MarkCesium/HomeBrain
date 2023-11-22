@@ -95,13 +95,14 @@
         </div>
         <div class="row my-2">
             {% if plates is empty %}
-                <h3 class="text-center text-color b1">You are not have any sensors in this location</h3>
+                <h3 class="text-center text-color b1 my-5">You are not have any sensors in this location</h3>
             {% else %}
                 {% for plate in plates %}
                     <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
                         <div class="device-card d-flex">
                             <div class="flex-row m-auto">
-                                <h3 class="b2 text-center">{{ plate.name }}</h3>
+                                <h3 class="b2 text-center my-1">{{ plate.name }}</h3>
+                                <h3 class="b2 text-center my-1">Total locations: {{ plate.locations }}</h3>
                             </div>
                         </div>
                     </div>

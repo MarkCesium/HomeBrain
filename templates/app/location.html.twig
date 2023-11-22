@@ -75,6 +75,10 @@
                             </div>
                         </div>
                     </div>
+                    <!-- ko if: sensors().length == 0 -->
+                    <h3 class="text-center my-4">You don't have a sensors in this location</h3>
+                    <!-- /ko -->
+                    <!-- ko if: sensors().length > 0 -->
                     <div class="row mx-0 my-2 px-sm-1 px-md-2 p-0" data-bind="foreach: sensors">
                         <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
                             <div class="sensor-card d-flex bg-vasilek-dis" data-bind="attr: {id: id}">
@@ -86,6 +90,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- /ko -->
                 </div>
                 <div class="my-2 px-2 row">
                     <h2 class="text-center vasilek">Devices</h2>
@@ -101,6 +106,10 @@
                             </div>
                         </div>
                     </div>
+                    <!-- ko if: devices().length == 0 -->
+                    <h3 class="text-center my-4">You don't have a devices in this location</h3>
+                    <!-- /ko -->
+                    <!-- ko if: devices().length > 0 -->
                     <div class="row mx-0 my-1 px-sm-1 px-md-2 p-0" data-bind="foreach: devices">
                         <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
                             <div class="device-card d-flex">
@@ -127,6 +136,7 @@
                             </div>
                         </div>
                     </div>
+                    <!-- /ko -->
                 </div>
             </div>
         </div>
@@ -137,7 +147,7 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        const socketSensor = new WebSocket("ws://homebrain2:3001");
+        const socketSensor = new WebSocket("ws://homebrain:3001");
         let interval;
         let viewFunctions = {
             changeRoom: function (data, event) {

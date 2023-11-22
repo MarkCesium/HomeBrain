@@ -55,7 +55,7 @@
             <h2 class="text-center vasilek">Sensors</h2>
             <div class="row mx-0 my-1 px-sm-1 px-md-2 p-0">
                 {% if sensors is empty %}
-                    <h3 class="text-center text-color b1">You are not have any sensors in this location</h3>
+                    <h3 class="text-center text-color b1 my-5">You are not have any sensors in this location</h3>
                 {% else %}
                     {% for sensor in sensors %}
                         <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
@@ -75,8 +75,8 @@
         <div class="mt-2 mb-2 px-2 row">
             <h2 class="text-center vasilek">Devices</h2>
             <div class="row mx-0 my-1 px-sm-1 px-md-2 p-0">
-                {% if sensors is empty %}
-                    <h3 class="text-center text-color b1">You are not have any devices in this location</h3>
+                {% if devices is empty %}
+                    <h3 class="text-center text-color b1 my-5">You are not have any devices in this location</h3>
                 {% else %}
                     {% for device in devices %}
                         <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">

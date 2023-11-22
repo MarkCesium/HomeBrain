@@ -69,7 +69,7 @@ class UserController extends AbstractController
         $formIOT = $this->createForm(UserApiDataType::class);
         $IOTs = [];
         foreach ($user->getUserApis() as $item) {
-            $IOTs[] = ['id' => $item->getId(), 'name' => $item->getUsername()];
+            $IOTs[] = ['id' => $item->getId(), 'name' => $item->getUsername(), 'locations' => count($item->getLocations())];
         }
         return $this->render('user/account.html.twig', [
             'username' => $user->getUsername(),

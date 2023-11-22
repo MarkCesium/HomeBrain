@@ -8,7 +8,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 class="modal-title fs-5" id="exampleModalLabel">Add new room</h3>
+                    <h3 class="modal-title fs-5" id="exampleModalLabel">Add new location</h3>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -51,7 +51,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn-add-room text-center b2" type="submit" form="location-form">Add room</button>
+                    <button class="btn-add-room text-center b2" type="submit" form="location-form">Add location</button>
                 </div>
             </div>
         </div>
@@ -68,16 +68,13 @@
                     </div>
                 </div>
             </div>
-            {# <div class="m-3 col-12 col-sm-12 col-md-8"> #}
-            {# <div class="chart"></div> #}
-            {# </div> #}
         </div>
         <div class="row mt-2">
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
                 <div class="add-text b1 vasilek d-flex justify-content-start">
                     <a href="#add_room" class="vasilek text-decoration-none d-flex justify-content-center"
                        data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        <img src="{{ asset('img/svg/plus.svg') }}" alt="add" class="me-1">Add room
+                        <img src="{{ asset('img/svg/plus.svg') }}" alt="add" class="me-1">Add location
                     </a>
                 </div>
             </div>
@@ -109,7 +106,7 @@
                     <div class="room-card p-2 d-inline text-center">
                         <img class="room-icon" src="{{ asset('img/svg/help-circle.svg') }}"
                              alt="nothing">
-                        <h3 class="room-name vasilek">You doesn't have a room</h3>
+                        <h3 class="room-name vasilek">You doesn't have a location</h3>
                     </div>
                 </div>
             {% endif %}

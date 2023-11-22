@@ -125,7 +125,7 @@ class AppController extends AbstractController
             );
             $em->persist($notice);
             $em->flush();
-            $this->addFlash('success', 'Room was successful added!');
+            $this->addFlash('success', 'Location was successful added!');
         } catch (ErrorException) {
             $this->addFlash('danger', 'Something went wrong!');
         }
@@ -378,6 +378,7 @@ class AppController extends AbstractController
             $data['iconImage'] = $location->getIconImage()->getId();
         }
         $data['UserApi'][$location->getUserApi()->getUsername()] = $location->getUserApi()->getId();
+
         return $this->json($data);
     }
 
