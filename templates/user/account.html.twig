@@ -39,7 +39,7 @@
         <div class="row">
             <h1 class="vasilek text-center my-2">Profile</h1>
         </div>
-        {{ form_start(form, {'attr': {'class': 'row', 'action': path('user_change_data'), 'method': 'post'}}) }}
+        {{ form_start(form, {'attr': {'class': 'row justify-content-center', 'action': path('user_change_data'), 'method': 'post'}}) }}
         <div class="col-12 text-center my-2">
             <div class="row my-3 d-flex justify-content-center">
                 <div class="col-8 d-flex justify-content-start my-1">
@@ -76,9 +76,11 @@
                 <div class="col-8 d-flex justify-content-center my-1">{{ form_widget(form.avatar, {'attr': {'class': 'form-modal-input mx-1 w-100 form-control'}}) }}</div>
             </div>
         </div>
-        <div class="col-12 d-flex justify-content-center my-2">
-            <button class="btn-add-room text-center b2" type="submit">Save changes</button>
-        </div>
+        <div class="row justify-content-center">
+            <div class="col-8 d-flex justify-content-center my-2">
+                <button class="btn-delete-room text-center b2 me-auto" type="button" onclick="logout()">Log out</button>
+                <button class="btn-add-room text-center b2 ms-auto" type="submit">Save changes</button>
+            </div>
         {{ form_end(form) }}
         <div class="row">
             <h2 class="vasilek text-center my-2">Your IoT plates:</h2>
@@ -95,7 +97,7 @@
         </div>
         <div class="row my-2">
             {% if plates is empty %}
-                <h3 class="text-center text-color b1 my-5">You are not have any sensors in this location</h3>
+                <h3 class="text-center text-color b1 my-5">You are not have any plates</h3>
             {% else %}
                 {% for plate in plates %}
                     <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
@@ -119,5 +121,9 @@
                 $('#username').addClass('my-white');
             }
         );
+
+        function logout() {
+            window.location.href = "{{ path('app_logout') }}";
+        }
     </script>
 {% endblock %}

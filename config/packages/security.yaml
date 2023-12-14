@@ -65,6 +65,7 @@ security:
 #    - { path: /api/api-authentication, roles: PUBLIC_ACCESS }
     - { path: /registration, roles: PUBLIC_ACCESS }
     - { path: ^/login/check, roles: PUBLIC_ACCESS }
+    - { path: /api/api-hello, roles: PUBLIC_ACCESS }
     - { path: /, roles: ROLE_USER }
 
 when@test:
