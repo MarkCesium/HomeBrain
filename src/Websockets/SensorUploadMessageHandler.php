@@ -30,7 +30,7 @@ class SensorUploadMessageHandler implements MessageComponentInterface
     {
         $this->connections = new SplObjectStorage;
         $this->redis = new Redis();
-        $this->redis->connect("redis");
+        $this->redis->connect('192.168.43.213', 6379);
         $this->serializer = new Serializer();
         $this->em = $em;
         $this->output = $output;
@@ -67,14 +67,14 @@ class SensorUploadMessageHandler implements MessageComponentInterface
                 foreach ($publisherArray['validation'] as $key => $validation) {
                     $aliasMethod = $validation['alias'];
                     $status = (new Validator)->$aliasMethod($validation['value'], $publisherArray['value']);
-                    if (!$status) {
-                        foreach ($this->connections as $connection) {
-                            if ($connection === $from) {
-                                $connection->send(json_encode(['msg' => 'call to function']));
-                                break;
-                            }
-                        }
-                    }
+//                    if (!$status) {
+//                        foreach ($this->connections as $connection) {
+//                            if ($connection === $from) {
+//                                $connection->send(json_encode(['msg' => 'call to function']));
+//                                break;
+//                            }
+//                        }
+//                    }
                     $publisherArray['validation'][$key] = ['isOk' => $status];
                 }
             }

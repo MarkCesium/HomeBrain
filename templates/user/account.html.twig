@@ -35,82 +35,78 @@
         </div>
     </div>
     <!-- end modals -->
-    <div class="container pt-1">
+    <div class="container-sm pt-1">
         <div class="row">
             <h1 class="vasilek text-center my-2">Profile</h1>
         </div>
-        {{ form_start(form, {'attr': {'class': 'row', 'action': path('user_change_data'), 'method': 'post'}}) }}
-        <div class="col-12 text-center my-2">
-            <div class="row my-3 d-flex justify-content-center">
-                <div class="col-8 d-flex justify-content-start my-1">
-                    <h3 class="vasilek">User name</h3>
-                </div>
-                <div class="col-8 d-flex justify-content-center my-1">
-                    {{ form_widget(form.username) }}
-                </div>
-            </div>
-            <div class="row my-3 d-flex justify-content-center">
-                <div class="col-8 d-flex justify-content-start my-1">
-                    <h3 class="vasilek">Email</h3>
-                </div>
-                <div class="col-8 d-flex justify-content-center my-1">
-                    {{ form_widget(form.email) }}
-                </div>
-            </div>
-            <div class="row my-3 d-flex justify-content-center">
-                <div class="col-8 d-flex justify-content-center my-1">
-                    {% if not app.user.avatar %}
-                        <img class="w-50 my-2" src="{{ asset('img/avatars/default_avatar.png') }}" alt="user_avatar">
-                    {% else %}
-                        <img class="w-50 my-2" src="{{ asset(app.user.avatar) }}" alt="user_avatar">
-                    {% endif %}
-                </div>
-            </div>
-            <div class="row my-3 d-flex justify-content-center choose-avatar">
-                <div class="col-8 d-flex justify-content-center my-1">
-                    <img src="{{ asset('img/svg/search.svg') }}" alt="search" class="mx-1">
-                    <h3 class="text-color b1 mx-1">Choose avatar</h3>
-                </div>
-            </div>
-            <div class="row my-3 d-flex justify-content-center choose-avatar">
-                <div class="col-8 d-flex justify-content-center my-1">{{ form_widget(form.avatar, {'attr': {'class': 'form-modal-input mx-1 w-100 form-control'}}) }}</div>
-            </div>
-        </div>
-        <div class="col-12 d-flex justify-content-center my-2">
-            <button class="btn-add-room text-center b2" type="submit">Save changes</button>
-        </div>
-        {{ form_end(form) }}
         <div class="row">
-            <h2 class="vasilek text-center my-2">Your IoT plates:</h2>
-        </div>
-        <div class="row mt-2">
-            <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
-                <div class="add-text b1 vasilek d-flex justify-content-start">
-                    <a href="#add_plate" class="vasilek text-decoration-none d-flex justify-content-center"
-                       data-bs-toggle="modal" data-bs-target="#plateModal">
-                        <img src="{{ asset('img/svg/plus.svg') }}" alt="add" class="me-1">Add plate
-                    </a>
-                </div>
+            {{ form_start(form, {'attr': {'id': 'userform', 'action': path('user_change_data'), 'method': 'post'}}) }}
+            <div class="mb-3">
+                <label class="form-label vasilek b1">Username</label>
+                {{ form_widget(form.username) }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label vasilek b1">Email</label>
+                {{ form_widget(form.email) }}
+            </div>
+            <div class="mb-3 text-center">
+                {% if not app.user.avatar %}
+                    <img class="my-2" src="{{ asset('img/avatars/default_avatar.png') }}"
+                         alt="user_avatar" style="width: auto;">
+                {% else %}
+                    <img class="my-2" src="{{ asset(app.user.avatar) }}" alt="user_avatar" style="width: 300px;">
+                {% endif %}
+            </div>
+            <div class="mb-3 d-flex justify-content-center">
+                <img src="{{ asset('img/svg/search.svg') }}" alt="search" class="mx-1">
+                <h3 class="b1 text-color m-0">Choose avatar</h3>
+            </div>
+            <div class="mb-3">
+                {{ form_widget(form.avatar, {'attr': {'class': 'form-modal-input w-100 form-control'}}) }}
+            </div>
+            {{ form_end(form) }}
+            <div class="d-flex px-2 my-2">
+                <button class="btn-delete-room text-center b2 ms-1 me-auto" type="button" onclick="logout()">Sign out</button>
+                <button class="btn-add-room text-center b2 me-1 ms-auto" type="submit" form="userform">Edit user</button>
             </div>
         </div>
-        <div class="row my-2">
-            {% if plates is empty %}
-                <h3 class="text-center text-color b1 my-5">You are not have any sensors in this location</h3>
-            {% else %}
-                {% for plate in plates %}
-                    <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
-                        <div class="device-card d-flex">
-                            <div class="flex-row m-auto">
-                                <h3 class="b2 text-center my-1">{{ plate.name }}</h3>
-                                <h3 class="b2 text-center my-1">Total locations: {{ plate.locations }}</h3>
+        <div class="row justify-content-center">
+            <div class="row">
+                <h2 class="vasilek text-center my-2">Your IoT plates:</h2>
+            </div>
+            <div class="row mt-2">
+                <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
+                    <div class="add-text b1 vasilek d-flex justify-content-start">
+                        <a href="#add_plate" class="vasilek text-decoration-none d-flex justify-content-center"
+                           data-bs-toggle="modal" data-bs-target="#plateModal">
+                            <img src="{{ asset('img/svg/plus.svg') }}" alt="add" class="me-1">Add plate
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="row my-2">
+                {% if plates is empty %}
+                    <h3 class="text-center text-color b1 my-5">You are not have any plates</h3>
+                {% else %}
+                    {% for plate in plates %}
+                        <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
+                            <div class="device-card d-flex">
+                                <div class="flex-row m-auto">
+                                    <a href="{{ path('app_edit_plate', {'plate': plate.id}) }}"
+                                       class="plate-link">
+                                        <h3 class="b2 text-center my-1">{{ plate.name }}</h3>
+                                    </a>
+                                    <h3 class="b2 text-center my-1">Total publishers: {{ plate.publishers }}</h3>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                {% endfor %}
-            {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}
+
 {% block javascripts %}
 
     {{ parent() }}
@@ -119,5 +115,9 @@
                 $('#username').addClass('my-white');
             }
         );
+
+        function logout() {
+            window.location.href = "{{ path('app_logout') }}";
+        }
     </script>
 {% endblock %}

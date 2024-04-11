@@ -34,8 +34,8 @@
                 };
 
                 xhr.send(JSON.stringify({
-                    "username": "e001",
-                    "password": "1234"
+                    "_username": "testplate",
+                    "_password": "111"
                 }));
             });
 
@@ -106,7 +106,7 @@
                         "value": getRandomArbitrary(0, 100)
                     },
                     {
-                        "id": 16,
+                        "id": 31,
                         "value": getRandomArbitrary(18, 25)
                     },
                     {
@@ -141,7 +141,7 @@
 
         getToken()
             .then(data => {
-                const socket = new WebSocket("ws://localhost:3003");
+                const socket = new WebSocket("ws://192.168.43.213:3003");
                 sendSensorData(socket, JSON.parse(data).token);
             })
     })

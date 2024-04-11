@@ -11,11 +11,14 @@ use App\Entity\UserApi;
 use App\Entity\UserLocation;
 use App\Form\PublisherDataType;
 use App\Form\PublisherType;
+use App\Form\UserApiEditType;
 use ErrorException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\VarDumper\VarDumper;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -192,10 +195,11 @@ class AppController extends AbstractController
         UserInterface $user
     ): Response
     {
+        $name = $request->request->all()['location_data']['name'];
         $locationId = $request->request->all()['location_data']['id'];
         $location = $em->getRepository(Location::class)->findUserLocation($locationId, $user->getId());
         $userApi = $em->getRepository(UserApi::class)->findOneBy(['id' => $request->request->all()['location_data']['user_api']]);
-        $location->setName($request->request->all()['location_data']['name']);
+
         if ($request->files->all()['location_data']['icon']) {
             $icon = $request->files->all()['location_data']['icon'];
             if (filesize($icon) > 512000) {
@@ -216,12 +220,10 @@ class AppController extends AbstractController
         } else if ($request->request->all()['location_data']['icon_image']) {
             $location->setIcon(null);
             $location->setIconImage($em->getRepository(IconImage::class)->findOneBy(['id' => $request->request->all()['location_data']['icon_image']]));
-        } else {
-            $this->addFlash('danger', 'Set your own room image or choose our image');
-            return $this->redirectToRoute('index');
         }
         $userApi->addLocation($location);
         $location->setUserApi($userApi);
+        $location->setName($name);
         try {
             $em->persist($location);
             $em->flush();
@@ -551,6 +553,77 @@ class AppController extends AbstractController
         }
 
         return $this->redirectToRoute('index');
+    }
+
+    public function editPlate
+    (
+        UserApi $plate,
+        UserInterface $user
+    ): Response
+    {
+        $form = $this->createForm(UserApiEditType::class, $plate);
+        return $this->render('app/edit_plate.html.twig', [
+            'form' => $form,
+            'name' => $plate->getUsername(),
+            'id' => $plate->getId()
+        ]);
+    }
+
+    public function changePlate
+    (
+        UserApi $plate,
+        Request $request,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $em,
+        UserInterface $user
+    )
+    {
+        $form = $this->createForm(UserApiEditType::class);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $plate->setUsername($form->get('username')->getData());
+            try {
+                $em->persist($plate);
+                $em->flush();
+                $this->addFlash('success', 'IoT was successful edited!');
+            } catch (ErrorException) {
+                $this->addFlash('danger', 'Something went wrong!');
+            }
+//            $hashedPassword = $passwordHasher->hashPassword(
+//                $plate,
+//                $form->get('old_password')->getData()
+//            );
+//            VarDumper::dump($form->get('old_password')->getData());
+//            VarDumper::dump($hashedPassword);
+//            VarDumper::dump($plate->getPassword());
+//            if ($plate->getPassword() == $hashedPassword) {
+//                VarDumper::dump('+');
+//            } else {
+//                VarDumper::dump('-');
+//            }
+        }
+
+        return $this->redirectToRoute('user_account');
+    }
+
+    public function deletePlate
+    (
+        UserApi $plate,
+        EntityManagerInterface $em,
+        UserInterface $user
+    )
+    {
+        if ($plate->getUser() !== $user) {
+            $this->addFlash('danger', 'It plate is not yours!');
+            return $this->redirectToRoute('index');
+        }
+        try {
+            $em->remove($plate);
+            $em->flush();
+        } catch (ErrorException) {
+            $this->addFlash('danger', 'Something went wrong!');
+        }
+        return $this->redirectToRoute('user_account');
     }
 
     /**

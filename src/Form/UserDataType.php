@@ -35,6 +35,7 @@ class UserDataType extends AbstractType
                         'maxSize' => '512k',
                         'mimeTypes' => [
                             'image/jpg',
+                            'image/jpeg',
                             'image/png',
                         ]
                     ])

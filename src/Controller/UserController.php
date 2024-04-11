@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\VarDumper\VarDumper;
 
 class UserController extends AbstractController
 {
@@ -60,15 +61,18 @@ class UserController extends AbstractController
      * @param UserInterface $user
      * @return Response
      */
-    public function account(
-        UserInterface $user
+    public function account
+    (
+        UserInterface $user,
+        EntityManagerInterface $em
     ): Response
     {
         $form = $this->createForm(UserDataType::class, $user);
         $formIOT = $this->createForm(UserApiDataType::class);
         $IOTs = [];
         foreach ($user->getUserApis() as $item) {
-            $IOTs[] = ['id' => $item->getId(), 'name' => $item->getUsername(), 'locations' => count($item->getLocations())];
+            $publishers = $em->getRepository(UserApi::class)->findUserApiPublishers($item->getId());
+            $IOTs[] = ['id' => $item->getId(), 'name' => $item->getUsername(), 'publishers' => count($publishers)];
         }
         return $this->render('user/account.html.twig', [
             'username' => $user->getUsername(),

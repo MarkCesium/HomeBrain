@@ -1,7 +1,7 @@
-POST http://homebrain2/api/api-authentication
+POST http://192.168.43.213/api/api-authentication
 Content-Type: application/json
 
 {
-  "username": "e001",
-  "password": "1234"
+  "_username": "testplate",
+  "_password": "111"
 }

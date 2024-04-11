@@ -80,6 +80,24 @@ app_delete_publisher:
   path: /publisher/{publisher}/delete
   controller: App\Controller\AppController::deletePublisher
 
+app_edit_plate:
+  path: /plate/{plate}/edit
+  controller: App\Controller\AppController::editPlate
+  requirements:
+    plate: '\d+'
+
+app_delete_plate:
+  path: /plate/{plate}/delete
+  controller: App\Controller\AppController::deletePlate
+  requirements:
+    plate: '\d+'
+
+app_plate_change_data:
+  path: /plate/{plate}/change
+  controller: App\Controller\AppController::changePlate
+  requirements:
+    plate: '\d+'
+
 user_account:
   path: /user/account
   controller: App\Controller\UserController::account

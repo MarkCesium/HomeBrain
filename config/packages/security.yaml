@@ -28,8 +28,8 @@ security:
       jwt: ~
       json_login:
         check_path: api_login_check
-        username_path: username
-        password_path: password
+        username_path: _username
+        password_path: _password
         success_handler: lexik_jwt_authentication.handler.authentication_success
         failure_handler: lexik_jwt_authentication.handler.authentication_failure
     #    api_request:
@@ -62,9 +62,10 @@ security:
   access_control:
     - { path: /login, roles: PUBLIC_ACCESS }
     - { path: /arduino/imitation, roles: PUBLIC_ACCESS }
-#    - { path: /api/api-authentication, roles: PUBLIC_ACCESS }
+    - { path: /api/api-authentication, roles: PUBLIC_ACCESS }
     - { path: /registration, roles: PUBLIC_ACCESS }
     - { path: ^/login/check, roles: PUBLIC_ACCESS }
+    - { path: /api/api-hello, roles: PUBLIC_ACCESS }
     - { path: /, roles: ROLE_USER }
 
 when@test:

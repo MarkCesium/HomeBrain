@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit: {{ name }}{% endblock %}
+
+{% block body %}
+    <div class="container-sm pt-1">
+        <div class="row">
+            <h1 class="vasilek text-center my-2">Edit: {{ name }}</h1>
+        </div>
+        <div class="row">
+            {{ form_start(form, {'attr': {'id': 'userapiform', 'action': path('app_plate_change_data', {'plate': id}), 'method': 'post'}}) }}
+            <div class="mb-3">
+                <label class="form-label vasilek b1">Username</label>
+                {{ form_widget(form.username) }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label vasilek b1">Old password</label>
+                {{ form_widget(form.old_password) }}
+            </div>
+            <div class="mb-3">
+                <label class="form-label vasilek b1">New password</label>
+                {{ form_widget(form.new_password) }}
+            </div>
+            {{ form_end(form) }}
+            <div class="px-2 d-flex mb-3">
+                <button id="delete-location" class="btn-delete-room text-center b2 ms-1 me-auto"
+                        onclick="deletePlate()">
+                    Delete plate
+                </button>
+                <button class="btn-add-room text-center b2 me-1 ms-auto" type="submit" form="userapiform">
+                    Edit plate
+                </button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        function deletePlate() {
+            let alright = confirm('Are you sure to delete this plate?');
+            if (alright) {
+                $.get(`{{ path('app_delete_plate', {'plate': id}) }}`, function (data) {
+                    window.location.href = '{{ path('user_account')}}';
+                })
+            }
+        }
+    </script>
+{% endblock %}
