@@ -147,7 +147,7 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        const socketSensor = new WebSocket("ws://192.168.43.213:3001");
+        const socketSensor = new WebSocket("ws://localhost:3001");
         let interval;
         let viewFunctions = {
             changeRoom: function (data, event) {
@@ -214,7 +214,7 @@
                 viewModel.sensors(data.data.sensors);
                 viewModel.devices(data.data.devices);
             });
-            interval = setInterval(() => sendData(socketSensor, location), 1000);
+            interval = setInterval(() => sendData(socketSensor, location), 100);
             const exampleModal = document.getElementById('exampleModal')
             exampleModal.addEventListener('show.bs.modal', event => {
                 // Button that triggered the modal
