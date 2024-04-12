@@ -1,6 +1,4 @@
-
 ###> symfony/framework-bundle ###
-.idea/
 /.env
 /.env.local
 /.env.local.php
@@ -21,6 +19,9 @@ yarn-error.log
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
+.idea/
 data/redis/*
 images/php/config/*
 images/php/log/*
+public/img/avatars/*/
+public/img/locations/*/
