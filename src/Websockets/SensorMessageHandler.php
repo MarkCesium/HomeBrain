@@ -48,14 +48,20 @@ class SensorMessageHandler implements MessageComponentInterface
         $msg
     )
     {
-        $locationId = intval(json_decode($msg));
-        $publishers = $this->em->getRepository(Location::class)->getLocationPublishers($locationId);
-        $publishersId = [];
-        foreach ($publishers as $item) {
-            $publishersId[] = $item->getId();
-
+        $location = intval(json_decode($msg));
+        $locationID = 'location:' . $location;
+        $publishersID = $this->redis->get($locationID);
+        if ($publishersID === false) {
+            $publishers = $this->em->getRepository(Location::class)->getLocationPublishers($location);
+            $publishersID = [];
+            foreach ($publishers as $item) {
+                $publishersID[] = $item->getId();
+            }
+            $this->redis->setex($locationID, 60, json_encode($publishersID));
+            $publishersValue = $this->redis->hMGet('sensor', $publishersID);
+        } else {
+            $publishersValue = $this->redis->hMGet('sensor', json_decode($publishersID));
         }
-        $publishersValue = $this->redis->hMGet('sensor', $publishersId);
         $data = [];
         foreach ($publishersValue as $item) {
             $data[] = $item;
