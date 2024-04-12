@@ -144,7 +144,7 @@ class UserController extends AbstractController
             try {
                 $em->persist($user);
                 $em->flush();
-                $this->addFlash('success', 'Room was successful added!');
+                $this->addFlash('success', 'Your info was changed successfully!');
             } catch (ErrorException) {
                 $this->addFlash('danger', 'Something went wrong!');
             }

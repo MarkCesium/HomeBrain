@@ -76,7 +76,7 @@ class AppController extends AbstractController
         if ($request->files->all()['location']['icon']) {
             $icon = $request->files->all()['location']['icon'];
             if (filesize($icon) > 512000) {
-                $this->addFlash('danger', 'Something went wrong!');
+                $this->addFlash('danger', 'Icon size is larger than allowed');
                 return $this->redirectToRoute('index');
             }
             $originalFilename = pathinfo($icon->getClientOriginalName(), PATHINFO_FILENAME);
@@ -94,7 +94,7 @@ class AppController extends AbstractController
             $location->setIcon(null);
             $location->setIconImage($em->getRepository(IconImage::class)->findOneBy(['id' => $request->request->all()['location']['icon_image']]));
         } else {
-            $this->addFlash('danger', 'Set your own room image or choose our image');
+            $this->addFlash('danger', 'Set your own location image or select our image');
             return $this->redirectToRoute('index');
         }
         $userApi->addLocation($location);
@@ -146,7 +146,7 @@ class AppController extends AbstractController
         $data['devices'] = [];
         $data['sensors'] = [];
         if (!$em->getRepository(Location::class)->findUserLocation($data['id'], $user->getId())) {
-            $this->addFlash('danger', 'You have not access to that room!');
+            $this->addFlash('danger', 'You do not have access to this location!');
 
             return $this->redirectToRoute('index');
         }
@@ -203,7 +203,7 @@ class AppController extends AbstractController
         if ($request->files->all()['location_data']['icon']) {
             $icon = $request->files->all()['location_data']['icon'];
             if (filesize($icon) > 512000) {
-                $this->addFlash('danger', 'Something went wrong!');
+                $this->addFlash('danger', 'Icon size is larger than allowed');
                 return $this->redirectToRoute('index');
             }
             $originalFilename = pathinfo($icon->getClientOriginalName(), PATHINFO_FILENAME);
@@ -227,7 +227,7 @@ class AppController extends AbstractController
         try {
             $em->persist($location);
             $em->flush();
-            $this->addFlash('success', 'Room was successful edited!');
+            $this->addFlash('success', 'Location has been successfully edited!');
         } catch (ErrorException) {
             $this->addFlash('danger', 'Something went wrong!');
         }
@@ -252,7 +252,7 @@ class AppController extends AbstractController
     )
     {
         if (!$em->getRepository(Location::class)->findUserLocation($location->getId(), $user->getId())) {
-            $this->addFlash('danger', 'You have not access to that room!');
+            $this->addFlash('danger', 'You do not have access to this location!');
 
             return $this->redirectToRoute('index');
         }
@@ -436,7 +436,7 @@ class AppController extends AbstractController
         $locationId = $request->get('publisher')['location'];
         $location = $em->getRepository(Location::class)->findUserLocation($locationId, $user->getId());
         if (!$location) {
-            $this->addFlash('danger', 'Publisher is not added! Something went wrong');
+            $this->addFlash('danger', 'Publisher not added! Something went wrong');
             return $this->redirectToRoute('index');
         }
         $publisher->setLocation($location);
@@ -458,7 +458,7 @@ class AppController extends AbstractController
                 );
                 $em->persist($notice);
                 $em->flush();
-                $this->addFlash('success', 'Publisher was successful added!');
+                $this->addFlash('success', 'Publisher has been successfully added!');
             } catch (ErrorException) {
                 $this->addFlash('danger', 'Something went wrong!');
             }
@@ -485,7 +485,7 @@ class AppController extends AbstractController
     ): Response
     {
         if (!$em->getRepository(Publisher::class)->findUserPublisher($user->getId(), $publisher->getId())) {
-            $this->addFlash('danger', 'You have not access to that publisher!');
+            $this->addFlash('danger', 'You do not have access to this publisher!');
 
             return $this->redirectToRoute('index');
         }
@@ -502,7 +502,7 @@ class AppController extends AbstractController
             try {
                 $em->persist($publisher);
                 $em->flush();
-                $this->addFlash('success', 'Publisher was successful edited!');
+                $this->addFlash('success', 'The publisher has been successfully edited!');
             } catch (ErrorException) {
                 $this->addFlash('danger', 'Something went wrong!');
             }
@@ -525,7 +525,7 @@ class AppController extends AbstractController
     )
     {
         if (!in_array($publisher, $em->getRepository(Location::class)->findUserPublishers($publisher->getLocation()->getId(), $user->getId()))) {
-            $this->addFlash('danger', 'You have not access to that publisher!');
+            $this->addFlash('danger', 'You do not have access to this publisher!');
 
             return $this->redirectToRoute('index');
         }
@@ -585,7 +585,7 @@ class AppController extends AbstractController
             try {
                 $em->persist($plate);
                 $em->flush();
-                $this->addFlash('success', 'IoT was successful edited!');
+                $this->addFlash('success', 'IoT has been successfully edited!');
             } catch (ErrorException) {
                 $this->addFlash('danger', 'Something went wrong!');
             }
@@ -614,7 +614,7 @@ class AppController extends AbstractController
     )
     {
         if ($plate->getUser() !== $user) {
-            $this->addFlash('danger', 'It plate is not yours!');
+            $this->addFlash('danger', 'You do not have access to this IoT!');
             return $this->redirectToRoute('index');
         }
         try {
