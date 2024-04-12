@@ -76,7 +76,7 @@ class AppController extends AbstractController
         if ($request->files->all()['location']['icon']) {
             $icon = $request->files->all()['location']['icon'];
             if (filesize($icon) > 512000) {
-                $this->addFlash('danger', 'Something went wrong!');
+                $this->addFlash('danger', 'Icon size is larger than allowed');
                 return $this->redirectToRoute('index');
             }
             $originalFilename = pathinfo($icon->getClientOriginalName(), PATHINFO_FILENAME);
@@ -203,7 +203,7 @@ class AppController extends AbstractController
         if ($request->files->all()['location_data']['icon']) {
             $icon = $request->files->all()['location_data']['icon'];
             if (filesize($icon) > 512000) {
-                $this->addFlash('danger', 'Something went wrong!');
+                $this->addFlash('danger', 'Icon size is larger than allowed');
                 return $this->redirectToRoute('index');
             }
             $originalFilename = pathinfo($icon->getClientOriginalName(), PATHINFO_FILENAME);
