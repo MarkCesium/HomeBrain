@@ -6,6 +6,7 @@ use App\Entity\IconImage;
 use App\Entity\Location;
 use App\Entity\Notice;
 use App\Entity\Publisher;
+use App\Entity\PublisherValueArchieve;
 use App\Entity\User;
 use App\Entity\UserApi;
 use App\Entity\UserLocation;
@@ -289,16 +290,41 @@ class AppController extends AbstractController
             ];
             $publishers = $em->getRepository(Location::class)->getLocationPublishers($location->getid());
             if ($publishers) {
+                $currentTime = (new \DateTime())->setTimestamp(time());
                 foreach ($publishers as $publisher) {
                     if ($publisher->getResponseType() === 'bool' || $publisher->getType() === 1) {
+                        continue;
+                    }
+                    $publisherValuesArchieve = $em->getRepository(
+                        PublisherValueArchieve::class)->findBy(['publisher' => $publisher],
+                        ['updated' => 'DESC'],
+                        limit: 480,
+                    );
+                    if (!$publisherValuesArchieve) {
+                        continue;
+                    }
+                    $publisherValues = [];
+                    $publisherLabels = [];
+                    $counter = 0;
+                    $max = 0;
+                    foreach ($publisherValuesArchieve as $publisherValue) {
+                        $updated = $publisherValue->getUpdated();
+                        if ($currentTime->diff($updated)->h === $counter and $max < 12) {
+                            $publisherValues[] = $publisherValue->getValue();
+                            $publisherLabels[] = $publisherValue->getUpdated()->format('H:i');
+                            $counter++;
+                            $max++;
+                        }
+                    }
+                    if (!$publisherValues) {
                         continue;
                     }
                     $locationData['chartDatas'][] = [
                         'name' => $publisher->getName(),
                         'id' => sprintf('chart_%s', $publisher->getId()),
                         'data' => [
-                            'min' => 20,
-                            'max' => 40
+                            'values' => array_reverse($publisherValues),
+                            'labels' => array_reverse($publisherLabels)
                         ]
                     ];
                 }
