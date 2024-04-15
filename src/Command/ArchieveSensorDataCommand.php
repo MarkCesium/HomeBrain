@@ -45,12 +45,14 @@ class ArchieveSensorDataCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $io->success('Executed');
-        $data = $this->redis->hGetAll('sensor');
+        $data = $this->redis->mget(
+            $this->redis->keys('sensor:*')
+        );
         foreach ($data as $key => &$item) {
             $archieveArray = json_decode($item, true);
-            $publisher = $this->em->getRepository(Publisher::class)->findOneBy(['id' => $key]);
+            $publisher = $this->em->getRepository(Publisher::class)->findOneBy(['id' => $archieveArray['id']]);
             if (!$publisher) {
-                $this->redis->hDel('sensor', $key);
+                $this->redis->del('sensor:'.$archieveArray['id']);
                 continue;
             }
             $archieveArray['publisher'] = $publisher;
@@ -59,7 +61,7 @@ class ArchieveSensorDataCommand extends Command
             $this->em->persist($archieveValue);
         }
         $this->em->flush();
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        $io->success('Done!');
 
         return Command::SUCCESS;
     }

@@ -79,7 +79,7 @@ class SensorUploadMessageHandler implements MessageComponentInterface
                 }
             }
             $this->output->writeln(json_encode($publisherArray));
-            $this->redis->hSet('sensor', $publisherArray['id'], json_encode($publisherArray));
+            $this->redis->setex('sensor:'.$publisherArray['id'], 90, json_encode($publisherArray));
         }
 
     }

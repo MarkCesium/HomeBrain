@@ -55,12 +55,12 @@ class SensorMessageHandler implements MessageComponentInterface
             $publishers = $this->em->getRepository(Location::class)->getLocationPublishers($location);
             $publishersID = [];
             foreach ($publishers as $item) {
-                $publishersID[] = $item->getId();
+                $publishersID[] = 'sensor:'.$item->getId();
             }
             $this->redis->setex($locationID, 60, json_encode($publishersID));
-            $publishersValue = $this->redis->hMGet('sensor', $publishersID);
+            $publishersValue = $this->redis->mget($publishersID);
         } else {
-            $publishersValue = $this->redis->hMGet('sensor', json_decode($publishersID));
+            $publishersValue = $this->redis->mget(json_decode($publishersID));
         }
         $data = [];
         foreach ($publishersValue as $item) {
