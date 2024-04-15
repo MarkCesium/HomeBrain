@@ -169,7 +169,11 @@
                     viewModel.name(data.data.name);
                     for (let sensor of data.data.sensors) {
                         sensor.value = ko.observable(sensor.value);
-                        sensor.updated = ko.observable(sensor.updated);
+                        if (sensor.updated !== null) {
+                        sensor.updated = ko.observable(timeConverter(sensor.updated));
+                        } else {
+                            sensor.updated = ko.observable(sensor.updated);
+                        }
                     }
                     for (let device of data.data.devices) {
                         device.value = ko.observable(device.value);
@@ -205,7 +209,11 @@
                 viewModel.name(data.data.name);
                 for (let sensor of data.data.sensors) {
                     sensor.value = ko.observable(sensor.value);
-                    sensor.updated = ko.observable(sensor.updated);
+                    if (sensor.updated !== null) {
+                        sensor.updated = ko.observable(timeConverter(sensor.updated));
+                    } else {
+                        sensor.updated = ko.observable(sensor.updated);
+                    }
                 }
                 for (let device of data.data.devices) {
                     device.value = ko.observable(device.value);

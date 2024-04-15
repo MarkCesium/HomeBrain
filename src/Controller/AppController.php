@@ -434,8 +434,18 @@ class AppController extends AbstractController
         foreach ($publisher as $item) {
             if ($item->getType() == 1) {
                 $response['data']['devices'][] = $item->getAsArrayClient();
-            } else {
-                $response['data']['sensors'][] = $item->getAsArrayClient();
+            }
+            else {
+                $lastValue = $em->getRepository(PublisherValueArchieve::class)->findOneBy(
+                    ['publisher' => $item],
+                    ['updated' => 'DESC']
+                );
+                $data = $item->getAsArrayClient();
+                if ($lastValue) {
+                    $data['value'] = $lastValue->getValue();
+                    $data['updated'] = strtotime($lastValue->getUpdated()->format("Y-m-d H:i:s"));
+                }
+                $response['data']['sensors'][] = $data;
             }
         }
 
