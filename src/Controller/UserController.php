@@ -21,8 +21,6 @@ class UserController extends AbstractController
 {
     public function login(Request $request): Response
     {
-        $this->addFlash('success', 'Success authorization!');
-
         return $this->render('user/login.html.twig', [
             'controller_name' => 'UserController',
         ]);
@@ -48,7 +46,6 @@ class UserController extends AbstractController
             $user->setPassword($hashedPassword);
             $em->persist($user);
             $em->flush();
-            $this->addFlash('success', 'Success registration!');
             return $this->redirectToRoute('index');
         }
 
