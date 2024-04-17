@@ -57,7 +57,18 @@ class ArchieveSensorDataCommand extends Command
             }
             $archieveArray['publisher'] = $publisher;
             $archieveArray['updated'] = (new \DateTime())->setTimestamp($archieveArray['updated']);
+            $archieveArray['value'] = round($archieveArray['value'], 2);
             $archieveValue = new PublisherValueArchieve($archieveArray);
+            if (isset($archieveArray['validation'])) {
+                $isValid = true;
+                foreach ($archieveArray['validation'] as $valid) {
+                    if (!$valid['isOk']) {
+                        $isValid = false;
+                        break;
+                    }
+                }
+                $archieveValue->setIsValid($isValid);
+            }
             $this->em->persist($archieveValue);
         }
         $this->em->flush();
