@@ -444,6 +444,9 @@ class AppController extends AbstractController
                 if ($lastValue) {
                     $data['value'] = $lastValue->getValue();
                     $data['updated'] = strtotime($lastValue->getUpdated()->format("Y-m-d H:i:s"));
+                    if ($lastValue->isIsValid() !== null) {
+                        $data['status'] = $lastValue->isIsValid();
+                    }
                 }
                 $response['data']['sensors'][] = $data;
             }
