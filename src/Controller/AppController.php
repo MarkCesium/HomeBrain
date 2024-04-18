@@ -310,7 +310,13 @@ class AppController extends AbstractController
                         $valueFound = false;
                         foreach ($publisherValuesArchieve as $publisherValue) {
                             $updated = $publisherValue->getUpdated();
-                            if ($currentTime->diff($updated)->h === $counter) {
+                            if (
+                                $currentTime->diff($updated)->h === $counter
+                                and
+                                $currentTime->diff($updated)->i === 0
+                                and
+                                $currentTime->diff($updated)->d === 0
+                            ) {
                                 $publisherValues[] = $publisherValue->getValue();
                                 $publisherLabels[] = $updated->format('H:i');
                                 $valueFound = true;
@@ -339,7 +345,6 @@ class AppController extends AbstractController
 
             $locationsData[] = $locationData;
         }
-
         return $this->render('app/dashboard.html.twig', [
             'locationsData' => array_reverse($locationsData)
         ]);
