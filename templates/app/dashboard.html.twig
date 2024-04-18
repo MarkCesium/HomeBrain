@@ -35,8 +35,8 @@
                 'label': "{{ chartData.name }}",
                 'id': `{{ chartData.id }}`,
                 'data': {
-                    'minData': {{ chartData.data.min }},
-                    'maxData': {{ chartData.data.max }}
+                    'values': [{% for value in chartData.data.values %}{{ value }},{% endfor %}],
+                    'labels': [{% for label in chartData.data.labels %}"{{ label }}",{% endfor %}]
                 }
             },
             {% endfor %}
@@ -44,32 +44,12 @@
             {% endfor %}
         ];
 
-        const getRandomData = (count, min, max) => {
-            let data = [];
-            for (let i = count; i >= 0; i--) {
-                data.push(Math.floor(Math.random() * (max - min) + min));
-            }
-
-            return data;
-        };
-
-        const getTime = () => {
-            let date = new Date;
-            let now = date.getHours();
-            let time = [];
-            for (let i = 7; i >= 0; i--) {
-                time.push((now - i < 10 ? "0" : "") + (date.getHours() - i) + ":00");
-            }
-
-            return time;
-        }
-
         const createChart = (ctx, label, dataValue) => {
             let data = {
-                labels: getTime(),
+                labels: dataValue.labels,
                 datasets: [{
                     label: label,
-                    data: getRandomData(7, dataValue.minData, dataValue.maxData),
+                    data: dataValue.values,
                     borderWidth: 2,
                     fill: true,
                     borderColor: 'rgba(110, 158, 249, 1)',

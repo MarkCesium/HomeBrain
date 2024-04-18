@@ -147,7 +147,7 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        const socketSensor = new WebSocket("ws://localhost:3001");
+        const socketSensor = new WebSocket("ws://192.168.1.95:3001");
         let interval;
         let viewFunctions = {
             changeRoom: function (data, event) {
@@ -169,7 +169,18 @@
                     viewModel.name(data.data.name);
                     for (let sensor of data.data.sensors) {
                         sensor.value = ko.observable(sensor.value);
-                        sensor.updated = ko.observable(sensor.updated);
+                        if (sensor.updated !== null) {
+                        sensor.updated = ko.observable(timeConverter(sensor.updated));
+                        } else {
+                            sensor.updated = ko.observable(sensor.updated);
+                        }
+                        if (sensor.status !== null) {
+                            if (sensor.status) {
+                                $(`#${sensor.id}`).removeClass('bg-vasilek-dis').removeClass('bg-bad-dis').addClass('bg-good-dis');
+                            } else {
+                                $(`#${sensor.id}`).removeClass('bg-vasilek-dis').removeClass('bg-good-dis').addClass('bg-bad-dis');
+                            }
+                        }
                     }
                     for (let device of data.data.devices) {
                         device.value = ko.observable(device.value);
@@ -177,7 +188,7 @@
                     }
                     viewModel.sensors(data.data.sensors);
                     viewModel.devices(data.data.devices)
-                    interval = setInterval(() => sendData(socketSensor, location), 1000);
+                    interval = setInterval(() => sendData(socketSensor, location), 100);
                 });
             }
         }
@@ -205,7 +216,18 @@
                 viewModel.name(data.data.name);
                 for (let sensor of data.data.sensors) {
                     sensor.value = ko.observable(sensor.value);
-                    sensor.updated = ko.observable(sensor.updated);
+                    if (sensor.updated !== null) {
+                        sensor.updated = ko.observable(timeConverter(sensor.updated));
+                    } else {
+                        sensor.updated = ko.observable(sensor.updated);
+                    }
+                    if (sensor.status !== undefined) {
+                        if (sensor.status) {
+                            $(`#${sensor.id}`).removeClass('bg-vasilek-dis').addClass('bg-good-dis');
+                        } else {
+                            $(`#${sensor.id}`).removeClass('bg-vasilek-dis').addClass('bg-bad-dis');
+                        }
+                    }
                 }
                 for (let device of data.data.devices) {
                     device.value = ko.observable(device.value);

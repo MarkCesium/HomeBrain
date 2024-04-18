@@ -6,6 +6,7 @@ use App\Entity\IconImage;
 use App\Entity\Location;
 use App\Entity\Notice;
 use App\Entity\Publisher;
+use App\Entity\PublisherValueArchieve;
 use App\Entity\User;
 use App\Entity\UserApi;
 use App\Entity\UserLocation;
@@ -289,16 +290,54 @@ class AppController extends AbstractController
             ];
             $publishers = $em->getRepository(Location::class)->getLocationPublishers($location->getid());
             if ($publishers) {
+                $currentTime = (new \DateTime())->setTimestamp(time());
                 foreach ($publishers as $publisher) {
                     if ($publisher->getResponseType() === 'bool' || $publisher->getType() === 1) {
                         continue;
+                    }
+                    $publisherValuesArchieve = $em->getRepository(
+                        PublisherValueArchieve::class)->findBy(['publisher' => $publisher],
+                        ['updated' => 'DESC'],
+                        limit: 480,
+                    );
+                    if (!$publisherValuesArchieve) {
+                        continue;
+                    }
+                    $publisherValues = [];
+                    $publisherLabels = [];
+                    $counter = 0;
+                    for ($i = 0; $i < 8; $i++) {
+                        $valueFound = false;
+                        foreach ($publisherValuesArchieve as $publisherValue) {
+                            $updated = $publisherValue->getUpdated();
+                            if (
+                                $currentTime->diff($updated)->h === $counter
+                                and
+                                $currentTime->diff($updated)->i === 0
+                                and
+                                $currentTime->diff($updated)->d === 0
+                            ) {
+                                $publisherValues[] = $publisherValue->getValue();
+                                $publisherLabels[] = $updated->format('H:i');
+                                $valueFound = true;
+                                $counter++;
+                                break;
+                            }
+                        }
+                        if (!$valueFound) {
+                            $timestamp = $currentTime->getTimestamp();
+                            $time = (new \DateTime())->setTimestamp($timestamp - $counter * 3600);
+                            $counter++;
+                            $publisherLabels[] = $time->format('H:i');
+                            $publisherValues[] = null;
+                        }
                     }
                     $locationData['chartDatas'][] = [
                         'name' => $publisher->getName(),
                         'id' => sprintf('chart_%s', $publisher->getId()),
                         'data' => [
-                            'min' => 20,
-                            'max' => 40
+                            'values' => array_reverse($publisherValues),
+                            'labels' => array_reverse($publisherLabels)
                         ]
                     ];
                 }
@@ -306,7 +345,6 @@ class AppController extends AbstractController
 
             $locationsData[] = $locationData;
         }
-
         return $this->render('app/dashboard.html.twig', [
             'locationsData' => array_reverse($locationsData)
         ]);
@@ -408,8 +446,21 @@ class AppController extends AbstractController
         foreach ($publisher as $item) {
             if ($item->getType() == 1) {
                 $response['data']['devices'][] = $item->getAsArrayClient();
-            } else {
-                $response['data']['sensors'][] = $item->getAsArrayClient();
+            }
+            else {
+                $lastValue = $em->getRepository(PublisherValueArchieve::class)->findOneBy(
+                    ['publisher' => $item],
+                    ['updated' => 'DESC']
+                );
+                $data = $item->getAsArrayClient();
+                if ($lastValue) {
+                    $data['value'] = $lastValue->getValue();
+                    $data['updated'] = strtotime($lastValue->getUpdated()->format("Y-m-d H:i:s"));
+                    if ($lastValue->isIsValid() !== null) {
+                        $data['status'] = $lastValue->isIsValid();
+                    }
+                }
+                $response['data']['sensors'][] = $data;
             }
         }
 

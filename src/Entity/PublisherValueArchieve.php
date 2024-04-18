@@ -24,6 +24,9 @@ class PublisherValueArchieve
     #[ORM\JoinColumn(nullable: false)]
     private ?Publisher $publisher = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $isValid = null;
+
     public function __construct(array $data)
     {
         $this->setValue($data['value']);
@@ -68,6 +71,18 @@ class PublisherValueArchieve
     public function setPublisher(?Publisher $publisher): static
     {
         $this->publisher = $publisher;
+
+        return $this;
+    }
+
+    public function isIsValid(): ?bool
+    {
+        return $this->isValid;
+    }
+
+    public function setIsValid(?bool $isValid): static
+    {
+        $this->isValid = $isValid;
 
         return $this;
     }
