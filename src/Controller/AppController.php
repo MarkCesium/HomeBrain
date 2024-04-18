@@ -306,18 +306,25 @@ class AppController extends AbstractController
                     $publisherValues = [];
                     $publisherLabels = [];
                     $counter = 0;
-                    $max = 0;
-                    foreach ($publisherValuesArchieve as $publisherValue) {
-                        $updated = $publisherValue->getUpdated();
-                        if ($currentTime->diff($updated)->h === $counter and $max < 12) {
-                            $publisherValues[] = $publisherValue->getValue();
-                            $publisherLabels[] = $publisherValue->getUpdated()->format('H:i');
-                            $counter++;
-                            $max++;
+                    for ($i = 0; $i < 8; $i++) {
+                        $valueFound = false;
+                        foreach ($publisherValuesArchieve as $publisherValue) {
+                            $updated = $publisherValue->getUpdated();
+                            if ($currentTime->diff($updated)->h === $counter) {
+                                $publisherValues[] = $publisherValue->getValue();
+                                $publisherLabels[] = $updated->format('H:i');
+                                $valueFound = true;
+                                $counter++;
+                                break;
+                            }
                         }
-                    }
-                    if (!$publisherValues) {
-                        continue;
+                        if (!$valueFound) {
+                            $timestamp = $currentTime->getTimestamp();
+                            $time = (new \DateTime())->setTimestamp($timestamp - $counter * 3600);
+                            $counter++;
+                            $publisherLabels[] = $time->format('H:i');
+                            $publisherValues[] = null;
+                        }
                     }
                     $locationData['chartDatas'][] = [
                         'name' => $publisher->getName(),
