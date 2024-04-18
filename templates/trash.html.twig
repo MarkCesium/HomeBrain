@@ -141,7 +141,7 @@
 
         getToken()
             .then(data => {
-                const socket = new WebSocket("ws://192.168.43.213:3003");
+                const socket = new WebSocket("ws://localhost:3003");
                 sendSensorData(socket, JSON.parse(data).token);
             })
     })

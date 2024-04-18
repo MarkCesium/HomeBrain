@@ -52,7 +52,7 @@
             <div class="mb-3 text-center">
                 {% if not app.user.avatar %}
                     <img class="my-2" src="{{ asset('img/avatars/default_avatar.png') }}"
-                         alt="user_avatar" style="width: auto;">
+                         alt="user_avatar" style="width: 300px;">
                 {% else %}
                     <img class="my-2" src="{{ asset(app.user.avatar) }}" alt="user_avatar" style="width: 300px;">
                 {% endif %}

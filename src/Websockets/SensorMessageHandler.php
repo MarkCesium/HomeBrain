@@ -31,7 +31,7 @@ class SensorMessageHandler implements MessageComponentInterface
     {
         $this->connections = new SplObjectStorage;
         $this->redis = new Redis();
-        $this->redis->connect('192.168.43.213', 6379);
+        $this->redis->connect('localhost', 6379);
         $this->serializer = new Serializer();
         $this->em = $em;
         $this->output = $output;
@@ -48,14 +48,20 @@ class SensorMessageHandler implements MessageComponentInterface
         $msg
     )
     {
-        $locationId = intval(json_decode($msg));
-        $publishers = $this->em->getRepository(Location::class)->getLocationPublishers($locationId);
-        $publishersId = [];
-        foreach ($publishers as $item) {
-            $publishersId[] = $item->getId();
-
+        $location = intval(json_decode($msg));
+        $locationID = 'location:' . $location;
+        $publishersID = $this->redis->get($locationID);
+        if ($publishersID === false) {
+            $publishers = $this->em->getRepository(Location::class)->getLocationPublishers($location);
+            $publishersID = [];
+            foreach ($publishers as $item) {
+                $publishersID[] = 'sensor:'.$item->getId();
+            }
+            $this->redis->setex($locationID, 60, json_encode($publishersID));
+            $publishersValue = $this->redis->mget($publishersID);
+        } else {
+            $publishersValue = $this->redis->mget(json_decode($publishersID));
         }
-        $publishersValue = $this->redis->hMGet('sensor', $publishersId);
         $data = [];
         foreach ($publishersValue as $item) {
             $data[] = $item;

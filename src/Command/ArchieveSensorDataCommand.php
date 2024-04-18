@@ -31,7 +31,7 @@ class ArchieveSensorDataCommand extends Command
 
         $this->em = $em;
         $this->redis = new Redis();
-        $this->redis->connect("redis");
+        $this->redis->connect("localhost", 6379);
     }
 
     protected function configure(): void
@@ -45,21 +45,34 @@ class ArchieveSensorDataCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         $io->success('Executed');
-        $data = $this->redis->hGetAll('sensor');
+        $data = $this->redis->mget(
+            $this->redis->keys('sensor:*')
+        );
         foreach ($data as $key => &$item) {
             $archieveArray = json_decode($item, true);
-            $publisher = $this->em->getRepository(Publisher::class)->findOneBy(['id' => $key]);
+            $publisher = $this->em->getRepository(Publisher::class)->findOneBy(['id' => $archieveArray['id']]);
             if (!$publisher) {
-                $this->redis->hDel('sensor', $key);
+                $this->redis->del('sensor:'.$archieveArray['id']);
                 continue;
             }
             $archieveArray['publisher'] = $publisher;
             $archieveArray['updated'] = (new \DateTime())->setTimestamp($archieveArray['updated']);
+            $archieveArray['value'] = round($archieveArray['value'], 2);
             $archieveValue = new PublisherValueArchieve($archieveArray);
+            if (isset($archieveArray['validation'])) {
+                $isValid = true;
+                foreach ($archieveArray['validation'] as $valid) {
+                    if (!$valid['isOk']) {
+                        $isValid = false;
+                        break;
+                    }
+                }
+                $archieveValue->setIsValid($isValid);
+            }
             $this->em->persist($archieveValue);
         }
         $this->em->flush();
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        $io->success('Done!');
 
         return Command::SUCCESS;
     }
