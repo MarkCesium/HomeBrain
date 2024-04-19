@@ -79,8 +79,8 @@
                 btn.setAttribute('id', 'delete-setting');
                 btn.setAttribute('onclick', 'deleteSetting(this)');
                 btn.innerHTML = 'Delete setting';
+                item.appendChild(btn);
                 collectionHolder.appendChild(item);
-                collectionHolder.appendChild(btn);
                 collectionHolder.dataset.index++;
             }
         })
