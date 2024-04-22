@@ -147,7 +147,7 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        const socketSensor = new WebSocket("ws://192.168.1.95:3001");
+        const socketSensor = new WebSocket("ws://192.168.100.4:3001");
         let interval;
         let viewFunctions = {
             changeRoom: function (data, event) {

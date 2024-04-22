@@ -125,28 +125,5 @@
                 $('#nav-home').addClass('my-white');
             }
         );
-        let locationIdNow;
-
-        function selectLocation(locationId) {
-            locationIdNow = locationId;
-            $.get(`/location/${locationId}/get`, function (data) {
-                let select = document.querySelector('#location_data_icon_image');
-                console.log(data);
-                $('#location_data_id').val(locationId);
-                $('#location_data_name').val(data.name);
-                if (data.iconImage) {
-                    select.value = data.iconImage;
-                }
-            })
-        }
-
-        function deleteLocation() {
-            let alright = confirm('Are you sure to delete this location? It is also delete all this publishers!');
-            if (alright) {
-                $.get(`/location/${locationIdNow}/delete`, function (data) {
-                    window.location.href = '/';
-                })
-            }
-        }
     </script>
 {% endblock %}
