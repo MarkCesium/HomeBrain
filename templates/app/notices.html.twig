@@ -21,7 +21,7 @@
                             <img class="notice-icon" src="{{ asset('img/svg/notices/test.svg') }}" alt="removed">
                         {% endif %}
                         <h3 class="text-color my-auto mx-2 ms-md-3 b2 notice-text">{{ notice.text }}</h3>
-                        <h4 class="b3 text-color-dis my-auto justify-content-end">{{ notice.time|date('Y-m-d h:m:s') }}</h4>
+                        <h4 class="b3 text-color-dis my-auto justify-content-end">{{ notice.time|date('d.m.y H:i:s') }}</h4>
                     </li>
                 {% endfor %}
             </ul>

@@ -47,9 +47,9 @@
             <h1 class="vasilek text-center my-2" data-bind="text: name"></h1>
         </div>
         <div class="row">
-            <div class="my-2 col-12 col-sm-12 col-md-3 col-lg-3 order-md-last">
+            <div class="my-2 col-12 col-sm-12 col-md-4 col-lg-3 order-md-last">
                 <section class="m-0 row rooms-widget text-center d-flex justify-content-center">
-                    <h2 class="my-1 col-12 vasilek">Rooms</h2> {# TODO: Change to Locations without bugs#}
+                    <h2 class="my-1 col-12 vasilek">Locations</h2>
                     <div class="my-1 col-12 list-group rooms-list p-0">
                         {% for location in locations %}
                             <a href="#{{ location.id }}"
@@ -60,7 +60,7 @@
                     </div>
                 </section>
             </div>
-            <div class="my-2 col-12 col-sm-12 col-md-9 col-lg-9 order-md-first">
+            <div class="my-2 col-12 col-sm-12 col-md-8 col-lg-9 order-md-first">
                 <div class="mt-0 mb-2 px-2 row">
                     <h2 class="text-center vasilek">Sensors</h2>
                     <div class="row mx-0 my-2 px-sm-1 px-md-2 p-0">
@@ -147,7 +147,7 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        const socketSensor = new WebSocket("ws://192.168.1.95:3001");
+        const socketSensor = new WebSocket("ws://192.168.100.4:3001");
         let interval;
         let viewFunctions = {
             changeRoom: function (data, event) {

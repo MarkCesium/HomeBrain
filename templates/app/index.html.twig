@@ -57,7 +57,7 @@
         </div>
     </div>
     <!-- Modals End -->
-    <div class="container-fluid px-2 px-sm-3 px-md-3 px-lg-4 px-xl-5">
+    <div class="container-fluid">
         <h1 class="text-center my-2 vasilek">Main info</h1>
         <div class="row my-2">
             <div class="col-12">
@@ -125,28 +125,5 @@
                 $('#nav-home').addClass('my-white');
             }
         );
-        let locationIdNow;
-
-        function selectLocation(locationId) {
-            locationIdNow = locationId;
-            $.get(`/location/${locationId}/get`, function (data) {
-                let select = document.querySelector('#location_data_icon_image');
-                console.log(data);
-                $('#location_data_id').val(locationId);
-                $('#location_data_name').val(data.name);
-                if (data.iconImage) {
-                    select.value = data.iconImage;
-                }
-            })
-        }
-
-        function deleteLocation() {
-            let alright = confirm('Are you sure to delete this location? It is also delete all this publishers!');
-            if (alright) {
-                $.get(`/location/${locationIdNow}/delete`, function (data) {
-                    window.location.href = '/';
-                })
-            }
-        }
     </script>
 {% endblock %}

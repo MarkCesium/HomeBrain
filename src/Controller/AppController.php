@@ -285,6 +285,7 @@ class AppController extends AbstractController
         $locations = $em->getRepository(Location::class)->findUserLocations($user->getId());
         foreach ($locations as $location) {
             $locationData = [
+                'id' => $location->getId(),
                 'name' => $location->getName(),
                 'chartDatas' => []
             ];
