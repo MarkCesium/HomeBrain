@@ -23,8 +23,10 @@ class IntegratedSystemController extends AbstractController
     {
         $sensors = $em->getRepository(Publisher::class)->findUserPublishers($user->getUser()->getId(), 2);
         $sensorsArray = [];
+        $ids = [];
         foreach ($sensors as $item) {
             $sensorsArray[] = $item->getAsArrayAPI();
+            $ids[] = $item->getId();
         }
 
         return $this->json([

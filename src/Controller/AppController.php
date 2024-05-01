@@ -13,15 +13,13 @@ use App\Entity\UserLocation;
 use App\Form\PublisherDataType;
 use App\Form\PublisherType;
 use App\Form\UserApiEditType;
+use Doctrine\ORM\EntityManagerInterface;
 use ErrorException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\VarDumper\VarDumper;
-use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 class AppController extends AbstractController
@@ -29,14 +27,12 @@ class AppController extends AbstractController
     /**
      * @param EntityManagerInterface $em
      * @param UserInterface $user
-     * @param ChartBuilderInterface $chartBuilder
      * @return Response
      */
     public function index
     (
         EntityManagerInterface $em,
-        UserInterface $user,
-        ChartBuilderInterface $chartBuilder
+        UserInterface $user
     ): Response
     {
         $locations = $em->getRepository(Location::class)->findUserLocations($user->getId());
