@@ -270,7 +270,6 @@
 
             socketSensor.addEventListener('message', function (msg) {
                 const data = JSON.parse(msg.data);
-                console.log(data);
                 let sensors = viewModel.sensors();
                 for (let sensor of sensors) {
                     for (const sensorData of data.data.sensors) {
@@ -314,6 +313,22 @@
                         }
                     }
                 }
+
+                let devices = viewModel.devices();
+                for (let device of devices) {
+                    for (const deviceData of data.data.devices) {
+                        if (deviceData !== null && deviceData.id === device.id) {
+                            if (device.responseType === 'bool') {
+                                if (deviceData.value == 1) {
+                                    document.getElementById(`deviceinput:${deviceData.id}`).value = "Turn off";
+                                } else {
+                                    document.getElementById(`deviceinput:${deviceData.id}`).value = "Turn on";
+                                }
+                            }
+                        }
+                    }
+                }
+
             })
         });
 
@@ -334,20 +349,12 @@
                 console.log("Connecting");
                 return;
             }
-            if (e.value === "Turn on") {
+            if (e.value === "Turn on" || e.value === "Turn off") {
                 e.value = "Processing..."
                 const data = {
                     "type": "sendDevice",
-                    "device": e.parentElement.parentElement.getAttribute('id').split(':')[1],
+                    "device": parseInt(e.parentElement.parentElement.getAttribute('id').split(':')[1]),
                     "value": true
-                }
-                socketSensor.send(JSON.stringify(data));
-            } else if (e.value === "Turn off") {
-                e.value = "Processing..."
-                const data = {
-                    "type": "sendDevice",
-                    "device": e.parentElement.parentElement.getAttribute('id').split(':')[1],
-                    "value": false
                 }
                 socketSensor.send(JSON.stringify(data));
             }
@@ -361,5 +368,6 @@
             let datetime = (a.getHours() < 10 ? "0" : "") + a.getHours() + ":" + (a.getMinutes() < 10 ? "0" : "") + a.getMinutes() + ":" + (a.getSeconds() < 10 ? "0" : "") + a.getSeconds();
             return `${date}-${month} ${datetime}`;
         }
+
     </script>
 {% endblock %}
