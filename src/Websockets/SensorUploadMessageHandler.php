@@ -8,11 +8,11 @@ use App\Services\Validator;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Ratchet\ConnectionInterface;
+use Ratchet\MessageComponentInterface;
 use Redis;
+use SplObjectStorage;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Serializer\Serializer;
-use Ratchet\MessageComponentInterface;
-use SplObjectStorage;
 
 class SensorUploadMessageHandler implements MessageComponentInterface
 {
@@ -50,6 +50,11 @@ class SensorUploadMessageHandler implements MessageComponentInterface
         $msg = json_decode($msg, true);
         $sensorID = [];
         $data = [];
+        if ($msg['type'] === 'sendDevice') {
+            $id = 'device:' . $msg['data']['id'];
+            $this->redis->set($id, json_encode(['status' => 'done', 'value' => $msg['data']['value'], 'id' => $msg['data']['id']]));
+            return;
+        }
         foreach ($msg['data']['sensors'] as $item) {
             $sensorID[] = $item['id'];
             $data[$item['id']] = ['id' => $item['id'], 'value' => $item['value'], 'updated' => time()];

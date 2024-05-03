@@ -3,7 +3,6 @@
 
 namespace App\Command;
 
-use App\Websockets\SensorMessageHandler;
 use App\Websockets\SensorUploadMessageHandler;
 use Doctrine\ORM\EntityManagerInterface;
 use Ratchet\Http\HttpServer;
