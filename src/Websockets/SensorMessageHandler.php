@@ -48,27 +48,52 @@ class SensorMessageHandler implements MessageComponentInterface
         $msg
     )
     {
-        $location = intval(json_decode($msg));
+        $msgData = json_decode($msg, true);
+        if ($msgData['type'] === 'sendDevice') {
+            $deviceID = 'device:' . $msgData['device'];
+            $msg = [
+                'status' => 'wait',
+                'value' => $msgData['value'],
+                'id' => $msgData['device']
+            ];
+            $this->redis->setex($deviceID, 60, json_encode($msg));
+            return;
+        } elseif ($msgData['type'] === 'getLocation') {
+            $location = intval($msgData['location']);
+        }
         $locationID = 'location:' . $location;
         $publishersID = $this->redis->get($locationID);
         if ($publishersID === false) {
             $publishers = $this->em->getRepository(Location::class)->getLocationPublishers($location);
+            if (empty($publishers)) {
+                return;
+            }
             $publishersID = [];
             foreach ($publishers as $item) {
-                $publishersID[] = 'sensor:'.$item->getId();
+                if ($item->getType() === 2) $publishersID['sensors'][] = 'sensor:' . $item->getId();
+                else $publishersID['devices'][] = 'device:' . $item->getId();
             }
             $this->redis->setex($locationID, 60, json_encode($publishersID));
-            $publishersValue = $this->redis->mget($publishersID);
+            $sensorsValue = $this->redis->mget($publishersID['sensors']);
+            $devicesValue = $this->redis->mget($publishersID['devices']);
         } else {
-            $publishersValue = $this->redis->mget(json_decode($publishersID));
+            $sensorsValue = $this->redis->mget(json_decode($publishersID, true)['sensors']);
+            $devicesValue = $this->redis->mget(json_decode($publishersID, true)['devices']);
         }
         $data = [];
-        foreach ($publishersValue as $item) {
-            $data[] = $item;
+        foreach ($sensorsValue as $item) {
+            $data['sensors'][] = json_decode($item);
+        }
+        foreach ($devicesValue as $item) {
+            $data['devices'][] = json_decode($item);
         }
         foreach ($this->connections as $connection) {
             if ($connection === $from) {
-                $connection->send(json_encode($data));
+                $msg = [
+                    'type' => 'sendSensors',
+                    'data' => $data
+                ];
+                $connection->send(json_encode($msg));
             }
         }
     }

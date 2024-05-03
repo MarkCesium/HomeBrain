@@ -112,26 +112,17 @@
                     <!-- ko if: devices().length > 0 -->
                     <div class="row mx-0 my-1 px-sm-1 px-md-2 p-0" data-bind="foreach: devices">
                         <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
-                            <div class="device-card d-flex">
-                                <div class="my-auto">
+                            <div class="device-card d-flex" data-bind="attr: {id: 'device:'+id}">
+                                <div class="m-auto">
                                     <h3 class="b2 text-center w-100 py-1" data-bind="text: name"></h3>
-                                    <form class="device-form text-center mt-2" data-bind="attr: {data: id}">
-                                        <!-- ko if: responseType=='int' || responseType=='float' -->
-                                        <input type="text" class="device-input my-2 mx-auto"
-                                               placeholder="Enter value to device">
-                                        <!-- /ko -->
-                                        <!-- ko if: responseType=='bool' -->
-                                        <div class="d-flex my-2 justify-content-center switch-block pt-1">
-                                            <h3 class="b3 me-2 d-flex justify-content-center">Off/On</h3>
-                                            <div class="form-check form-switch d-flex justify-content-center">
-                                                <input class="form-check-input" type="checkbox" role="switch">
-                                            </div>
-                                        </div>
-                                        <!-- /ko -->
-                                        <button class="btn-add-room text-center b2 b3 my-2" type="submit"
-                                                onclick="sendDevice()">Send
-                                        </button>
-                                    </form>
+                                    <!-- ko if: value -->
+                                    <input type="button" class="b2 nav-link mx-auto" value="Turn off"
+                                           onclick="sendDevice(this)" data-bind="attr: {id: 'deviceinput:'+id}">
+                                    <!-- /ko -->
+                                    <!-- ko else -->
+                                    <input type="button" class="b2 nav-link mx-auto" value="Turn on"
+                                           onclick="sendDevice(this)" data-bind="attr: {id: 'deviceinput:'+id}">
+                                    <!-- /ko -->
                                 </div>
                             </div>
                         </div>
@@ -147,7 +138,7 @@
 {% block javascripts %}
     {{ parent() }}
     <script>
-        const socketSensor = new WebSocket("ws://192.168.100.4:3001");
+        const socketSensor = new WebSocket("ws://192.168.100.2:3001");
         let interval;
         let viewFunctions = {
             changeRoom: function (data, event) {
@@ -170,7 +161,7 @@
                     for (let sensor of data.data.sensors) {
                         sensor.value = ko.observable(sensor.value);
                         if (sensor.updated !== null) {
-                        sensor.updated = ko.observable(timeConverter(sensor.updated));
+                            sensor.updated = ko.observable(timeConverter(sensor.updated));
                         } else {
                             sensor.updated = ko.observable(sensor.updated);
                         }
@@ -188,8 +179,8 @@
                     }
                     viewModel.sensors(data.data.sensors);
                     viewModel.devices(data.data.devices)
-                    interval = setInterval(() => sendData(socketSensor, location), 100);
                 });
+                interval = setInterval(() => sendData(socketSensor, location), 100);
             }
         }
         let viewModel = {
@@ -278,15 +269,12 @@
             }
 
             socketSensor.addEventListener('message', function (msg) {
-                const dataRaw = JSON.parse(msg.data);
-                let data = dataRaw.map(item => {
-                    return JSON.parse(item);
-                });
+                const data = JSON.parse(msg.data);
                 console.log(data);
                 let sensors = viewModel.sensors();
                 for (let sensor of sensors) {
-                    for (const sensorData of data) {
-                        if (sensorData.id === sensor.id) {
+                    for (const sensorData of data.data.sensors) {
+                        if (sensorData !== null && sensorData.id === sensor.id) {
                             let isOk = true;
                             if (!('validation' in sensorData)) {
                                 if (sensor.responseType === "int") {
@@ -334,12 +322,35 @@
                 console.log("Connecting");
                 return;
             }
-            socket.send(JSON.stringify(location));
+            const data = {
+                "type": "getLocation",
+                "location": location
+            }
+            socket.send(JSON.stringify(data));
         }
 
-        function sendDevice() {
-            event.preventDefault();
-            console.log(new FormData(event.target));
+        function sendDevice(e) {
+            if (socketSensor.readyState !== 1) {
+                console.log("Connecting");
+                return;
+            }
+            if (e.value === "Turn on") {
+                e.value = "Processing..."
+                const data = {
+                    "type": "sendDevice",
+                    "device": e.parentElement.parentElement.getAttribute('id').split(':')[1],
+                    "value": true
+                }
+                socketSensor.send(JSON.stringify(data));
+            } else if (e.value === "Turn off") {
+                e.value = "Processing..."
+                const data = {
+                    "type": "sendDevice",
+                    "device": e.parentElement.parentElement.getAttribute('id').split(':')[1],
+                    "value": false
+                }
+                socketSensor.send(JSON.stringify(data));
+            }
         }
 
         function timeConverter(UNIX_timestamp) {

@@ -59,16 +59,18 @@
     <!-- Modals End -->
     <div class="container-fluid">
         <h1 class="text-center my-2 vasilek">Main info</h1>
+        {% if locations is empty %}
         <div class="row my-2">
             <div class="col-12">
                 <div class="info">
                     <h3 class="text-center vasilek mb-1">How to use it?</h3>
-                    <div class="b1 text-color text-center">See <a href="#" class="vasilek">user help</a> guide, to use
+                    <div class="b1 text-color text-center">See <a href="https://github.com/MarkCesium/HomeBrain/wiki" class="vasilek">user help</a> guide, to use
                         it good
                     </div>
                 </div>
             </div>
         </div>
+        {% endif %}
         <div class="row mt-2">
             <div class="col-12 col-sm-12 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
                 <div class="add-text b1 vasilek d-flex justify-content-start">
@@ -106,7 +108,7 @@
                     <div class="room-card p-2 d-inline text-center">
                         <img class="room-icon" src="{{ asset('img/svg/help-circle.svg') }}"
                              alt="nothing">
-                        <h3 class="room-name vasilek">You doesn't have a location</h3>
+                        <h3 class="room-name vasilek">You have no locations</h3>
                     </div>
                 </div>
             {% endif %}

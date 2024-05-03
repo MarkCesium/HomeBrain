@@ -29,6 +29,7 @@ class NoticeRepository extends ServiceEntityRepository
             ->leftJoin('n.location', 'l', 'n.location=l.id')
             ->leftJoin('l.userLocations', 'ul', 'l.userLocations=ul.location')
             ->where('ul.user = :id')
+            ->orderBy('n.time', 'ASC')
             ->setParameter('id', $userId)
             ->getQuery();
 
