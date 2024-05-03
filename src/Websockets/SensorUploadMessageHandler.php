@@ -48,13 +48,14 @@ class SensorUploadMessageHandler implements MessageComponentInterface
     )
     {
         $msg = json_decode($msg, true);
-        $id = [];
+        $sensorID = [];
         $data = [];
-        foreach ($msg['data'] as &$item) {
-            $id[] = $item['id'];
+        foreach ($msg['data']['sensors'] as $item) {
+            $sensorID[] = $item['id'];
             $data[$item['id']] = ['id' => $item['id'], 'value' => $item['value'], 'updated' => time()];
         }
-        $validationSettings = $this->em->getRepository(PublisherDescription::class)->getSensorsSettings($id, 'validation');
+        $this->em->clear();
+        $validationSettings = $this->em->getRepository(PublisherDescription::class)->getSensorsSettings($sensorID, 'validation');
         foreach ($validationSettings as $itemSetting) {
             $itemSettingArray = $itemSetting->getAsArray();
             if ($itemSettingArray['alias'] === 'rd') {
@@ -67,21 +68,33 @@ class SensorUploadMessageHandler implements MessageComponentInterface
                 foreach ($publisherArray['validation'] as $key => $validation) {
                     $aliasMethod = $validation['alias'];
                     $status = (new Validator)->$aliasMethod($validation['value'], $publisherArray['value']);
-//                    if (!$status) {
-//                        foreach ($this->connections as $connection) {
-//                            if ($connection === $from) {
-//                                $connection->send(json_encode(['msg' => 'call to function']));
-//                                break;
-//                            }
-//                        }
-//                    }
                     $publisherArray['validation'][$key] = ['isOk' => $status];
                 }
             }
-            $this->output->writeln(json_encode($publisherArray));
-            $this->redis->setex('sensor:'.$publisherArray['id'], 90, json_encode($publisherArray));
+            $this->redis->setex('sensor:' . $publisherArray['id'], 90, json_encode($publisherArray));
         }
 
+        $deviceID = [];
+        foreach ($msg['data']['devices'] as $item) {
+            $deviceID[] = 'device:' . $item['id'];
+        }
+        $devices = $this->redis->mget($deviceID);
+        foreach ($devices as $device) {
+            if (!$device) {
+                continue;
+            }
+            $device = json_decode($device, true);
+            if ($device['status'] !== 'wait') {
+                continue;
+            }
+            foreach ($this->connections as $connection) {
+                if ($connection === $from) {
+                    $connection->send(json_encode(['msg' => ['value' => $device['value'], 'device' => $device['id']]]));
+                    $this->redis->del('device:' . $device['id']);
+                    break;
+                }
+            }
+        }
     }
 
     public function onClose(ConnectionInterface $conn)
