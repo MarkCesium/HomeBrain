@@ -22,24 +22,39 @@ class PublisherDescriptionRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param int[] $id
+     * @param array $id
      * @param string $fieldGroup
-     * @return int|mixed|string
+     * @return mixed
      */
-    public function getSensorsSettings(array $id, string $fieldGroup)
+    public function getSensorsSettings(array $id, string $fieldGroup): mixed
     {
         $query = $this->getEntityManager()->createQueryBuilder()
             ->select('pd', 'ps')
             ->from(PublisherDescription::class, 'pd')
             ->join('pd.publisherSetting', 'ps', 'pd.publisherSetting=ps.publisherDescription')
-//            ->join('pd.publisher', 'p', 'pd.publisher=p.id')
-//            ->join('p.location', 'l', 'p.location=l.id')
-            ->where(
-                $this->getEntityManager()->createQueryBuilder()
-                    ->expr()
-                    ->in('pd.publisher', $id)
-            )
+            ->where('pd.publisher in (:ids)')
             ->andWhere('ps.fieldsGroup = :fieldsGroup')
+            ->setParameter('ids', $id)
+            ->setParameter('fieldsGroup', $fieldGroup)
+            ->getQuery();
+
+        return $query->getResult();
+    }
+
+    /**
+     * @param int $id
+     * @param string $fieldGroup
+     * @return mixed
+     */
+    public function getSensorSettings(int $id, string $fieldGroup): mixed
+    {
+        $query = $this->getEntityManager()->createQueryBuilder()
+            ->select('pd', 'ps')
+            ->from(PublisherDescription::class, 'pd')
+            ->join('pd.publisherSetting', 'ps', 'pd.publisherSetting=ps.publisherDescription')
+            ->where('pd.publisher = :id')
+            ->andWhere('ps.fieldsGroup = :fieldsGroup')
+            ->setParameter('id', $id)
             ->setParameter('fieldsGroup', $fieldGroup)
             ->getQuery();
 
