@@ -59,7 +59,7 @@
                 {% else %}
                     {% for sensor in sensors %}
                         <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
-                            <div class="device-card d-flex">
+                            <div class="device-card d-flex bg-vasilek-dis">
                                 <div class="flex-row m-auto">
                                     <a href="{{ path('app_edit_publisher', {'publisher': sensor.id}) }}"
                                        class="publisher-link">
@@ -80,7 +80,7 @@
                 {% else %}
                     {% for device in devices %}
                         <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
-                            <div class="device-card d-flex">
+                            <div class="device-card d-flex bg-vasilek-dis">
                                 <div class="flex-row m-auto">
                                     <a href="{{ path('app_edit_publisher', {'publisher': device.id}) }}"
                                        class="publisher-link">
