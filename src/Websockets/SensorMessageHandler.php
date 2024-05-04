@@ -4,16 +4,14 @@
 namespace App\Websockets;
 
 use App\Entity\Location;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Ratchet\ConnectionInterface;
+use Ratchet\MessageComponentInterface;
 use Redis;
+use SplObjectStorage;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Serializer\Serializer;
-use Ratchet\MessageComponentInterface;
-use SplObjectStorage;
-use Symfony\Component\VarDumper\VarDumper;
 
 class SensorMessageHandler implements MessageComponentInterface
 {

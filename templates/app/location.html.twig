@@ -112,7 +112,7 @@
                     <!-- ko if: devices().length > 0 -->
                     <div class="row mx-0 my-1 px-sm-1 px-md-2 p-0" data-bind="foreach: devices">
                         <div class="px-0 py-2 col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3 d-flex justify-content-center">
-                            <div class="device-card d-flex" data-bind="attr: {id: 'device:'+id}">
+                            <div class="device-card d-flex bg-vasilek-dis" data-bind="attr: {id: 'device:'+id}">
                                 <div class="m-auto">
                                     <h3 class="b2 text-center w-100 py-1" data-bind="text: name"></h3>
                                     <!-- ko if: value -->
@@ -270,7 +270,6 @@
 
             socketSensor.addEventListener('message', function (msg) {
                 const data = JSON.parse(msg.data);
-                console.log(data);
                 let sensors = viewModel.sensors();
                 for (let sensor of sensors) {
                     for (const sensorData of data.data.sensors) {
@@ -314,6 +313,30 @@
                         }
                     }
                 }
+
+                let devices = viewModel.devices();
+                for (let device of devices) {
+                    for (const deviceData of data.data.devices) {
+                        if (deviceData !== null && deviceData.id === device.id) {
+                            if (deviceData.value === 'wait') {
+                                document.getElementById(`deviceinput:${deviceData.id}`).value = "Processing...";
+                                continue;
+                            }
+                            if (device.responseType === 'bool') {
+                                if (deviceData.value == 1) {
+                                    document.getElementById(`deviceinput:${deviceData.id}`).value = "Turn off";
+                                    document.getElementById(`device:${deviceData.id}`).classList.remove('bg-vasilek-dis');
+                                    document.getElementById(`device:${deviceData.id}`).classList.add('bg-good-dis');
+                                } else {
+                                    document.getElementById(`deviceinput:${deviceData.id}`).value = "Turn on";
+                                    document.getElementById(`device:${deviceData.id}`).classList.remove('bg-good-dis');
+                                    document.getElementById(`device:${deviceData.id}`).classList.add('bg-vasilek-dis');
+                                }
+                            }
+                        }
+                    }
+                }
+
             })
         });
 
@@ -334,20 +357,12 @@
                 console.log("Connecting");
                 return;
             }
-            if (e.value === "Turn on") {
+            if (e.value === "Turn on" || e.value === "Turn off") {
                 e.value = "Processing..."
                 const data = {
                     "type": "sendDevice",
-                    "device": e.parentElement.parentElement.getAttribute('id').split(':')[1],
+                    "device": parseInt(e.parentElement.parentElement.getAttribute('id').split(':')[1]),
                     "value": true
-                }
-                socketSensor.send(JSON.stringify(data));
-            } else if (e.value === "Turn off") {
-                e.value = "Processing..."
-                const data = {
-                    "type": "sendDevice",
-                    "device": e.parentElement.parentElement.getAttribute('id').split(':')[1],
-                    "value": false
                 }
                 socketSensor.send(JSON.stringify(data));
             }
@@ -361,5 +376,6 @@
             let datetime = (a.getHours() < 10 ? "0" : "") + a.getHours() + ":" + (a.getMinutes() < 10 ? "0" : "") + a.getMinutes() + ":" + (a.getSeconds() < 10 ? "0" : "") + a.getSeconds();
             return `${date}-${month} ${datetime}`;
         }
+
     </script>
 {% endblock %}

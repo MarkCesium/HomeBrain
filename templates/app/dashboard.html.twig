@@ -6,7 +6,7 @@
         <div class="row d-flex justify-content-center">
             {% for locationData in locationsData %}
                 <div class="row mb-3">
-                    <a href="{{ path('app_location') }}#{{ locationData.id }}" class="vasilek text-decoration-none">
+                    <a href="{{ path('app_location') }}#{{ locationData.id }}" class="vasilek">
                         <h2 class="text-center vasilek">{{ locationData.name }}</h2>
                     </a>
                     {% if locationData.chartDatas is empty %}

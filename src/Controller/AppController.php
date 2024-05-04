@@ -103,6 +103,8 @@ class AppController extends AbstractController
             $userLocation->setUser($user);
             $userLocation->setLocation($location);
             $em->persist($userLocation);
+            $dt = (new \DateTime());
+            $dt->setTimezone((new \DateTimeZone('Europe/Minsk')));
             $notice = new Notice(
                 [
                     'location' => $location,
@@ -111,7 +113,7 @@ class AppController extends AbstractController
                         'Location "%s" was added',
                         $location->getName()
                     ),
-                    'time' => (new \DateTime())->setTimestamp(time())
+                    'time' => $dt->setTimestamp(time())
                 ]
             );
             $em->persist($notice);

@@ -4,14 +4,13 @@
 namespace App\Websockets;
 
 use App\Entity\Location;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use Ratchet\ConnectionInterface;
-use Redis;
-use Symfony\Component\Serializer\Serializer;
 use Ratchet\MessageComponentInterface;
+use Redis;
 use SplObjectStorage;
+use Symfony\Component\Serializer\Serializer;
 
 class DeviceMessageHandler implements MessageComponentInterface
 {
